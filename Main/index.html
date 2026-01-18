@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Auth + Competition Combined</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 900px; margin: 24px auto; padding: 0 16px; }
+    h2, h3 { margin: 12px 0; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+    .row > * { flex: 1 1 200px; }
+    input, select, button { padding: 8px; font-size: 14px; }
+    .error { border: 2px solid #d32f2f !important; background: #ffebee; }
+    .error-text { color: #d32f2f; margin: 8px 0; }
+    .ok-text { color: #2e7d32; margin: 8px 0; }
+    .hidden { display: none; }
+    .section { border: 1px solid #ddd; border-radius: 8px; padding: 12px; margin: 12px 0; }
+    .list { border-top: 1px dashed #ccc; padding-top: 8px; margin-top: 8px; }
+    .entry { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <h2>Supabase Auth + Competition</h2>
+
+
+  <div id="authSection" class="section">
+    <h3>Login / Signup</h3>
+    <input type="email" id="email" placeholder="Enter your email" />
+    <input type="password" id="password" placeholder="Enter your password" />
+    <button id="signupBtn">Sign up</button>
+    <button id="signinBtn">Sign in</button>
+    <button id="forgotBtn" type="button">Forgot password?</button>
+    <script>
+  document.getElementById("forgotBtn").addEventListener("click", async () => {
+    const emailValue = document.getElementById("email").value.trim();
+
+    if (!emailValue) {
+      alert("Please enter your email first.");
+      return;
+    }
+
+    const { error } = await client.auth.resetPasswordForEmail(emailValue, {
+      redirectTo: window.location.origin + "/reset-password.html",
+    });
+
+    if (error) {
+      alert(error.message);
+    } else {
+      alert("Password reset email sent. Check your inbox.");
+    }
+  });
+</script>
+
+
+  </div>
+ 
+
+
+
+      <div class="row">
+      <button id="competitorsBtn">Competitors</button>
+      <button id="judgesBtn">Judges</button>
+      <button id="coachesBtn">Coaches</button>
+    </div>
+    <div id="categoryInfo" class="ok-text">Current category: competitors</div>
+    <div id="listContainer" class="list"></div>
+
+
+        <div class="section">
+      <h3>Set Team Name</h3>
+      <input type="text" id="teamNameInput" placeholder="Team name" />
+      <button id="setTeamBtn">Set Team</button>
+    </div>
+
+    <h1 style="color: red; font-family: Arial; font-weight: bold;">
+  Enter competitors real weight (example 33 kg)
+</h1>
+
+        <div class="section">
+      <h3>Add Entries</h3>
+      <input type="number" id="countInput" placeholder="How many?" />
+      <button id="generateBtn">Generate fields</button>
+      <div id="generatedContainer"></div>
+    </div>
+  </div> <!-- end competitionSection -->
+
+
+  <script>
+  const SUPABASE_URL = "https://cziwnycosdxeuacslcza.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6aXdueWNvc2R4ZXVhY3NsY3phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3MTkxMDAsImV4cCI6MjA4MjI5NTEwMH0.7OvfatHP7RAp6JS1F5hMlwfdSDgpN7EXsY2SVMoFSoY";
+  const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let teamNameGlobal = "";
+  let currentCategory = "competitors";
+  let currentUserId = null;
+</script>
+
+
+<script>
+  document.getElementById("signupBtn").addEventListener("click", async () => {
+    const { error } = await client.auth.signUp({
+      email: email.value,
+      password: password.value,
+    });
+    if (error) alert(error.message);
+    else alert("Check your email to confirm signup.");
+  });
+
+  document.getElementById("signinBtn").addEventListener("click", async () => {
+    const { error } = await client.auth.signInWithPassword({
+      email: email.value,
+      password: password.value,
+    });
+    if (error) { alert(error.message); return; }
+
+    const { data: userData } = await client.auth.getUser();
+    if (userData?.user) {
+      currentUserId = userData.user.id;
+      document.getElementById("userEmail").textContent = userData.user.email;
+      document.getElementById("authSection").classList.add("hidden");
+      document.getElementById("competitionSection").classList.remove("hidden");
+    } else {
+      document.getElementById("authWarning").classList.remove("hidden");
+    }
+  });
+</script>
+
+
+<script>
+  function setCategory(cat) {
+    currentCategory = cat;
+    document.getElementById("categoryInfo").textContent = "Current category: " + cat;
+    loadEntries();
+  }
+  document.getElementById("competitorsBtn").onclick = () => setCategory("competitors");
+  document.getElementById("judgesBtn").onclick = () => setCategory("judges");
+  document.getElementById("coachesBtn").onclick = () => setCategory("coaches");
+</script>
+
+
+<script>
+
+function safeSummary(cat, row) {
+  if (cat === "competitors") {
+    return `
+      <strong>${row.name}</strong> (${row.gender}, ${row.birthdate})<br>
+      Belt: ${row.belt}, Weight: ${row.weight} kg<br>
+      Team: ${row.team}<br>
+      <small>ID: ${row.id}</small>
+    `;
+  } else if (cat === "judges" || cat === "coaches") {
+    return `
+      <strong>${row.name}</strong><br>
+      Belt: ${row.belt}<br>
+      Team: ${row.team}<br>
+      <small>ID: ${row.id}</small>
+    `;
+  }
+  return JSON.stringify(row); // fallback
+}
+
+
+
+  async function loadEntries() {
+    if (!currentUserId) return;
+    const { data, error } = await client
+      .from(currentCategory)
+      .select("*")
+      .eq("user_id", currentUserId)
+      .limit(50);
+
+    const list = document.getElementById("listContainer");
+    list.innerHTML = "";
+    if (error) { list.textContent = "Error loading."; return; }
+    if (!data || data.length === 0) { list.textContent = "No entries yet."; return; }
+
+    data.forEach(row => {
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.innerHTML = safeSummary(currentCategory, row);
+
+      const delBtn = document.createElement("button");
+      delBtn.textContent = "Delete";
+      delBtn.onclick = async () => {
+        await client.from(currentCategory).delete().eq("id", row.id).eq("user_id", currentUserId);
+        loadEntries();
+      };
+      div.appendChild(delBtn);
+      list.appendChild(div);
+    });
+  }
+</script>
+
+
+<script>
+  document.getElementById("setTeamBtn").onclick = () => {
+    teamNameGlobal = document.getElementById("teamNameInput").value.trim();
+    alert("Team set: " + teamNameGlobal);
+  };
+</script>
+
+
+<script>
+  const container = document.getElementById("generatedContainer");
+  function clearGenerated() { container.innerHTML = ""; }
+
+  function beltSelect() {
+    return `<select class="field-belt">
+      <option value="">Belt *</option>
+      <option>10 kup</option><option>9 kup</option><option>8 kup</option>
+      <option>7 kup</option><option>6 kup</option><option>5 kup</option>
+      <option>4 kup</option><option>3 kup</option><option>2 kup</option>
+      <option>1 kup</option><option>1 dan</option><option>2 dan</option>
+      <option>3 dan</option><option>4 dan</option><option>5 dan</option>
+      <option>6 dan</option>
+    </select>`;
+  }
+
+  function makeCompetitorCard(idx) {
+    const wrap = document.createElement("div");
+    wrap.className = "section competitor";
+    wrap.innerHTML = `
+      <h4>Competitor #${idx}</h4>
+      <div class="row">
+        <input class="field-name" type="text" placeholder="Name *" />
+        <input class="field-birthdate" type="date" />
+        <select class="field-gender">
+          <option value="">Gender *</option>
+          <option>Male</option><option>Female</option>
+        </select>
+      </div>
+      <div class="row">
+        ${beltSelect()}
+        <input class="field-team" type="text" placeholder="Team *" value="${teamNameGlobal}" />
+        <input class="field-weight" type="number" step="0.1" placeholder="Weight (kg) *" />
+      </div>
+      <div class="error-text hidden"></div>
+    `;
+    return wrap;
+  }
+
+  function makeJudgeCard(idx) {
+    const wrap = document.createElement("div");
+    wrap.className = "section judge";
+    wrap.innerHTML = `
+      <h4>Judge #${idx}</h4>
+      <div class="row">
+        <input class="field-name" type="text" placeholder="Name *" />
+        ${beltSelect()}
+        <input class="field-team" type="text" placeholder="Team *" value="${teamNameGlobal}" />
+      </div>
+      <div class="error-text hidden"></div>
+    `;
+    return wrap;
+  }
+
+  function makeCoachCard(idx) {
+    const wrap = document.createElement("div");
+    wrap.className = "section coach";
+    wrap.innerHTML = `
+      <h4>Coach #${idx}</h4>
+      <div class="row">
+        <input class="field-name" type="text" placeholder="Name *" />
+        ${beltSelect()}
+        <input class="field-team" type="text" placeholder="Team *" value="${teamNameGlobal}" />
+      </div>
+      <div class="error-text hidden"></div>
+    `;
+    return wrap;
+  }
+
+  function markMissing(input) {
+    input.classList.add("error");
+    setTimeout(() => input.classList.remove("error"), 2000);
+  }
+
+  function showError(wrap, msg) {
+    const el = wrap.querySelector(".error-text");
+    el.textContent = msg;
+    el.classList.remove("hidden");
+    setTimeout(() => el.classList.add("hidden"), 2500);
+  }
+</script>
+
+
+<script>
+  function getCompetitorData(wrap) {
+    const name = wrap.querySelector(".field-name").value.trim();
+    const birthdate = wrap.querySelector(".field-birthdate").value.trim();
+    const gender = wrap.querySelector(".field-gender").value.trim();
+    const belt = wrap.querySelector(".field-belt").value.trim();
+    const team = wrap.querySelector(".field-team").value.trim();
+    const weight = wrap.querySelector(".field-weight").value;
+
+    const required = [
+      [name, wrap.querySelector(".field-name"), "Name missing"],
+      [birthdate, wrap.querySelector(".field-birthdate"), "Birthdate missing"],
+      [gender, wrap.querySelector(".field-gender"), "Gender missing"],
+      [belt, wrap.querySelector(".field-belt"), "Belt missing"],
+      [team, wrap.querySelector(".field-team"), "Team missing"],
+      [weight, wrap.querySelector(".field-weight"), "Weight missing"],
+    ];
+    for (const [val, el, msg] of required) {
+      if (!val) {
+        markMissing(el);
+        showError(wrap, msg);
+        return null;
+      }
+    }
+    return { name, birthdate, gender, belt, team, weight: Number(weight) };
+  }
+
+  function getJudgeData(wrap) {
+    const name = wrap.querySelector(".field-name").value.trim();
+    const belt = wrap.querySelector(".field-belt").value.trim();
+    const team = wrap.querySelector(".field-team").value.trim();
+    if (!name || !belt || !team) {
+      showError(wrap, "Missing fields");
+      return null;
+    }
+    return { name, belt, team };
+  }
+
+  function getCoachData(wrap) {
+    const name = wrap.querySelector(".field-name").value.trim();
+    const belt = wrap.querySelector(".field-belt").value.trim();
+    const team = wrap.querySelector(".field-team").value.trim();
+    if (!name || !belt || !team) {
+      showError(wrap, "Missing fields");
+      return null;
+    }
+    return { name, belt, team };
+  }
+</script>
+
+
+<script>
+  document.getElementById("generateBtn").addEventListener("click", () => {
+    const count = parseInt(document.getElementById("countInput").value || "0", 10);
+    if (isNaN(count) || count < 1) return;
+    clearGenerated();
+    for (let i = 0; i < count; i++) {
+      if (currentCategory === "competitors")
+        container.appendChild(makeCompetitorCard(i + 1));
+      else if (currentCategory === "judges")
+        container.appendChild(makeJudgeCard(i + 1));
+      else
+        container.appendChild(makeCoachCard(i + 1));
+    }
+    const addAll = document.createElement("button");
+    addAll.textContent = `Add all ${currentCategory}`;
+    addAll.type = "button";
+    addAll.id = "addAllBtn";
+    addAll.style.marginTop = "12px";
+    addAll.addEventListener("click", onAddAll);
+    container.appendChild(addAll);
+  });
+
+  async function onAddAll() {
+    let cardClass =
+      currentCategory === "competitors"
+        ? "competitor"
+        : currentCategory === "judges"
+        ? "judge"
+        : "coach";
+
+    const cards = Array.from(container.querySelectorAll(".section." + cardClass));
+    if (cards.length === 0) {
+      alert("No cards generated. Please click 'Generate fields' first.");
+      return;
+    }
+
+    let rows = [];
+    let invalidCount = 0;
+
+    for (const c of cards) {
+      let data = null;
+      if (currentCategory === "competitors") data = getCompetitorData(c);
+      else if (currentCategory === "judges") data = getJudgeData(c);
+      else data = getCoachData(c);
+
+      if (!data) {
+        invalidCount++;
+        continue;
+      }
+
+      // ✅ attach user_id
+      rows.push({ ...data, user_id: currentUserId });
+    }
+
+    if (rows.length === 0) {
+      alert(`No ${currentCategory} added: ${invalidCount} card(s) had missing fields.`);
+      return;
+    }
+
+    const { error } = await client.from(currentCategory).insert(rows);
+
+    if (error) {
+      console.error(error);
+      alert(`Failed to add ${currentCategory}: ${error.message}`);
+    } else {
+      let msg = `Added ${rows.length} ${currentCategory}.`;
+      if (invalidCount > 0) msg += ` (${invalidCount} skipped)`;
+      alert(msg);
+      clearGenerated();
+      loadEntries();
+    }
+  }
+</script>
+
+
+<script>
+  // Nothing extra needed here — session check already handled in Part 8.
+  // You can add extra UI logic if desired.
+</script>
+</body>
+</html>
