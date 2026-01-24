@@ -69,6 +69,7 @@
       <h3>Login / Signup</h3>
       <input type="email" id="email" placeholder="Enter your email" />
       <input type="password" id="password" placeholder="Enter your password" />
+      <button id="setNewPasswordBtn" class="hidden">Set new password</button>
       <button id="signupBtn">Sign up</button>
       <button id="signinBtn">Sign in</button>
       <button id="forgotBtn" type="button">Forgot password?</button>
@@ -106,6 +107,24 @@
         SUPABASE_URL,
         SUPABASE_ANON_KEY,
       );
+
+      // ===== PASSWORD RECOVERY HANDLING =====
+      let isRecoveryFlow = false;
+
+      client.auth.onAuthStateChange((event, session) => {
+        if (event === "PASSWORD_RECOVERY") {
+          isRecoveryFlow = true;
+          alert("You are resetting your password. Please enter a new one.");
+
+          // Hide normal auth buttons
+          document.getElementById("signupBtn").style.display = "none";
+          document.getElementById("signinBtn").style.display = "none";
+          document.getElementById("forgotBtn").style.display = "none";
+
+          // Show reset button
+          document.getElementById("setNewPasswordBtn").classList.remove("hidden");
+        }
+      });
 
       let teamNameGlobal = "";
       let currentCategory = "competitors";
@@ -173,6 +192,34 @@
             alert(error.message);
           } else {
             alert("Password reset email sent. Check your inbox.");
+          }
+        });
+
+      // ===== SET NEW PASSWORD BUTTON LOGIC =====
+      document
+        .getElementById("setNewPasswordBtn")
+        .addEventListener("click", async () => {
+          if (!isRecoveryFlow) {
+            alert("This page was not opened from a password reset email.");
+            return;
+          }
+
+          const newPassword = document.getElementById("password").value;
+          if (!newPassword || newPassword.length < 6) {
+            alert("Password must be at least 6 characters.");
+            return;
+          }
+
+          const { error } = await client.auth.updateUser({
+            password: newPassword,
+          });
+
+          if (error) {
+            alert(error.message);
+          } else {
+            alert("Password updated successfully. You can now log in.");
+            location.href =
+              "https://merky-w.github.io/Competition/azta-index.html";
           }
         });
 
