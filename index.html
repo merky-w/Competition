@@ -5,59 +5,153 @@
     <title>Vojvodina open ITF teakwondo-championship 9</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+      /* ===== GLOBAL STYLES ===== */
       body {
         font-family: system-ui, sans-serif;
         max-width: 900px;
         margin: 24px auto;
         padding: 0 16px;
+        background-color: #f7f7f7;
+        color: #333;
       }
+
       h2,
-      h3 {
+      h3,
+      h4 {
         margin: 12px 0;
+        font-family: "Segoe UI", sans-serif;
       }
+
+      h3 {
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 4px;
+      }
+
       .row {
         display: flex;
         gap: 12px;
         flex-wrap: wrap;
         margin-bottom: 8px;
       }
+
       .row > * {
         flex: 1 1 200px;
       }
+
       input,
       select,
       button {
         padding: 8px;
         font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        transition:
+          border 0.2s ease,
+          background-color 0.2s ease,
+          transform 0.1s ease;
       }
+
+      input:focus,
+      select:focus {
+        outline: 2px solid #1976d2;
+        background-color: #e3f2fd;
+      }
+
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+      input[type="number"]::-webkit-inner-spin-button,
+      input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      button {
+        cursor: pointer;
+        border: 1px solid #1976d2;
+        background-color: #2196f3;
+        color: white;
+        border-radius: 4px;
+      }
+      button:hover {
+        background-color: #1976d2;
+        transform: translateY(-1px);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+
+      /* ===== ERROR STYLING ===== */
       .error {
         border: 2px solid #d32f2f !important;
         background: #ffebee;
       }
       .error-text {
+        font-weight: bold;
         color: #d32f2f;
+        background-color: #ffebee;
+        padding: 4px 8px;
+        border-left: 4px solid #d32f2f;
+        border-radius: 4px;
         margin: 8px 0;
+        display: block;
       }
+
       .ok-text {
         color: #2e7d32;
         margin: 8px 0;
+        font-weight: bold;
       }
+
       .hidden {
-        display: none;
+        display: none !important;
       }
+
+      /* ===== SECTIONS ===== */
       .section {
         border: 1px solid #ddd;
         border-radius: 8px;
         padding: 12px;
         margin: 12px 0;
+        background-color: #fff;
       }
+
       .list {
         border-top: 1px dashed #ccc;
         padding-top: 8px;
         margin-top: 8px;
+        background-color: #fafafa;
+        border-radius: 6px;
       }
+
       .entry {
         margin-bottom: 8px;
+        padding: 6px;
+        border-bottom: 1px dotted #ccc;
+      }
+
+      small {
+        font-size: 0.8em;
+        color: #555;
+      }
+
+      /* ===== GENERATED CARDS ===== */
+      #generatedContainer .section {
+        margin-bottom: 12px;
+      }
+
+      .section.competitor {
+        border-left: 4px solid #42a5f5;
+      }
+      .section.judge {
+        border-left: 4px solid #66bb6a;
+      }
+      .section.coach {
+        border-left: 4px solid #ffa726;
+      }
+
+      .field-team {
+        background-color: #f5f5f5;
       }
     </style>
   </head>
@@ -91,8 +185,8 @@
         <button id="setTeamBtn">Set Team</button>
       </div>
 
-      <div class="section">
-        <h3>Add Entries</h3>
+      <div class="section hidden" id="addEntriesSection">
+        <h3 id="addEntriesTitle">Add Entries</h3>
         <input type="number" id="countInput" placeholder="How many?" min="1" />
         <button id="generateBtn">Generate fields</button>
         <div id="generatedContainer"></div>
@@ -100,6 +194,7 @@
     </div>
 
     <script>
+      /* ===== YOUR ORIGINAL JS CODE ===== */
       const SUPABASE_URL = "https://cziwnycosdxeuacslcza.supabase.co";
       const SUPABASE_ANON_KEY =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6aXdueWNvc2R4ZXVhY3NsY3phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3MTkxMDAsImV4cCI6MjA4MjI5NTEwMH0.7OvfatHP7RAp6JS1F5hMlwfdSDgpN7EXsY2SVMoFSoY";
@@ -122,7 +217,9 @@
           document.getElementById("forgotBtn").style.display = "none";
 
           // Show reset button
-          document.getElementById("setNewPasswordBtn").classList.remove("hidden");
+          document
+            .getElementById("setNewPasswordBtn")
+            .classList.remove("hidden");
         }
       });
 
@@ -195,6 +292,17 @@
           }
         });
 
+      function updateAddEntriesTitle() {
+        const title = document.getElementById("addEntriesTitle");
+        if (!title) return;
+
+        if (currentCategory === "competitors")
+          title.textContent = "Add Competitor Entries";
+        else if (currentCategory === "judges")
+          title.textContent = "Add Judge Entries";
+        else title.textContent = "Add Coach Entries";
+      }
+
       // ===== SET NEW PASSWORD BUTTON LOGIC =====
       document
         .getElementById("setNewPasswordBtn")
@@ -228,8 +336,11 @@
         currentCategory = cat;
         document.getElementById("categoryInfo").textContent =
           "Current category: " + cat;
+
+        updateAddEntriesTitle();
         loadEntries();
       }
+
       document.getElementById("competitorsBtn").onclick = () =>
         setCategory("competitors");
       document.getElementById("judgesBtn").onclick = () =>
@@ -240,6 +351,7 @@
       // ===== DATA LOADING =====
       async function loadEntries() {
         if (!currentUserId) return;
+
         const { data, error } = await client
           .from(currentCategory)
           .select("*")
@@ -248,15 +360,36 @@
 
         const list = document.getElementById("listContainer");
         list.innerHTML = "";
+
         if (error) {
           list.textContent = "Error loading.";
           return;
         }
+
+        // ✅ TEAM SUMMARY (always shown)
+        const teamInfo = document.createElement("div");
+        teamInfo.className = "ok-text";
+        const label =
+          currentCategory === "competitors"
+            ? "Competitors"
+            : currentCategory === "judges"
+              ? "Judges"
+              : "Coaches";
+
+        teamInfo.textContent = `Team: ${
+          teamNameGlobal || "Not set"
+        } | ${label}: ${data ? data.length : 0}`;
+
+        list.appendChild(teamInfo);
+
         if (!data || data.length === 0) {
-          list.textContent = "No entries yet.";
+          const empty = document.createElement("div");
+          empty.textContent = "No entries yet.";
+          list.appendChild(empty);
           return;
         }
 
+        // ✅ ENTRY LIST
         data.forEach((row) => {
           const div = document.createElement("div");
           div.className = "entry";
@@ -272,6 +405,7 @@
               .eq("user_id", currentUserId);
             loadEntries();
           };
+
           div.appendChild(delBtn);
           list.appendChild(div);
         });
@@ -298,12 +432,23 @@
 
       // ===== TEAM SETTING =====
       document.getElementById("setTeamBtn").onclick = () => {
-        teamNameGlobal = document.getElementById("teamNameInput").value.trim();
-        if (teamNameGlobal) {
-          alert("Team set: " + teamNameGlobal);
-        } else {
+        const input = document.getElementById("teamNameInput");
+
+        // 🔥 force uppercase
+        teamNameGlobal = input.value.trim().toUpperCase();
+        input.value = teamNameGlobal; // reflect it back in the input
+
+        if (!teamNameGlobal) {
           alert("Please enter a team name.");
+          return;
         }
+
+        alert("Team set: " + teamNameGlobal);
+
+        document.getElementById("addEntriesSection").classList.remove("hidden");
+
+        updateAddEntriesTitle();
+        loadEntries(); // optional but useful
       };
 
       // ===== FORM GENERATION & VALIDATION =====
@@ -378,8 +523,7 @@
       }
 
       function markMissing(input) {
-        input.classList.add("error");
-        setTimeout(() => input.classList.remove("error"), 2000);
+        input.classList.add("error"); // add red border
       }
 
       function showError(wrap, msg) {
@@ -478,6 +622,7 @@
           return;
         }
 
+        // Map currentCategory to actual card class names
         let cardClass =
           currentCategory === "competitors"
             ? "competitor"
@@ -494,29 +639,56 @@
         }
 
         let rows = [];
-        let invalidCount = 0;
+        let skipped = 0;
+        let hasError = false;
 
         for (const c of cards) {
+          const inputs = Array.from(c.querySelectorAll("input, select"));
+
+          // Check if all non-team fields are empty
+          const nonTeamFields = inputs.filter(
+            (el) => !el.classList.contains("field-team"),
+          );
+          const allNonTeamEmpty = nonTeamFields.every((el) => !el.value.trim());
+
+          if (allNonTeamEmpty) {
+            skipped++; // completely empty card except team → skip it
+            continue;
+          }
+
+          // Partially filled card → validate required fields
           let data = null;
           if (currentCategory === "competitors") data = getCompetitorData(c);
           else if (currentCategory === "judges") data = getJudgeData(c);
           else data = getCoachData(c);
 
           if (!data) {
-            invalidCount++;
+            // Highlight missing fields in red
+            nonTeamFields.forEach((el) => {
+              if (!el.value.trim()) markMissing(el);
+            });
+
+            showError(c, "Fill all required fields or leave entry empty");
+            hasError = true;
             continue;
           }
 
           rows.push({ ...data, user_id: currentUserId });
         }
 
-        if (rows.length === 0) {
+        if (hasError) {
           alert(
-            `No ${currentCategory} added: ${invalidCount} card(s) had missing fields.`,
+            "Some entries are incomplete. Fill all required fields or leave entries empty.",
           );
+          return; // stop adding
+        }
+
+        if (rows.length === 0) {
+          alert("No valid entries to add.");
           return;
         }
 
+        // Insert valid entries into Supabase
         const { error } = await client.from(currentCategory).insert(rows);
 
         if (error) {
@@ -524,7 +696,7 @@
           alert(`Failed to add ${currentCategory}: ${error.message}`);
         } else {
           let msg = `Added ${rows.length} ${currentCategory}.`;
-          if (invalidCount > 0) msg += ` (${invalidCount} skipped)`;
+          if (skipped > 0) msg += ` Skipped ${skipped} empty entries.`;
           alert(msg);
           clearGenerated();
           loadEntries();
