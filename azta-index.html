@@ -48,7 +48,7 @@
 
       /* --- LAYOUT --- */
       .container {
-        max-width: 600px; /* Slightly narrower for a focused auth page */
+        max-width: 600px;
         margin: 40px auto;
         flex: 1;
       }
@@ -76,7 +76,7 @@
         border-radius: 12px;
         box-shadow: var(--shadow);
         padding: 30px;
-        border-top: 5px solid var(--primary); /* Branding touch */
+        border-top: 5px solid var(--primary);
       }
 
       .card-header {
@@ -177,7 +177,7 @@
         margin-bottom: 20px;
         text-align: center;
         font-weight: 600;
-        display: none; /* Hidden by default */
+        display: none;
       }
 
       .status-info {
@@ -222,21 +222,6 @@
         font-size: 0.85rem;
       }
 
-      .back-link {
-        display: block;
-        margin-top: 15px;
-        text-align: center;
-        color: var(--gray);
-        text-decoration: none;
-        font-size: 0.9rem;
-      }
-
-      .back-link:hover {
-        color: var(--primary);
-        text-decoration: underline;
-      }
-
-      /* Utility */
       .hidden {
         display: none !important;
       }
@@ -272,10 +257,6 @@
         <button id="updateBtn" class="btn btn-success" disabled>
           <i class="fas fa-lock"></i> Update Password
         </button>
-
-        <a href="https://merky-w.github.io/Competition/azta-index.html" class="back-link">
-          <i class="fas fa-arrow-left"></i> Back to Login
-        </a>
       </main>
 
       <footer>
@@ -311,7 +292,7 @@
        */
       function showMessage(msg, type = "info") {
         statusMessage.textContent = msg;
-        statusMessage.className = "status-bar"; // Reset classes
+        statusMessage.className = "status-bar";
         
         if (type === "success") {
           statusMessage.classList.add("status-success");
@@ -337,8 +318,7 @@
           updateBtn.disabled = false;
           newPasswordInput.focus();
         } else if (event === "SIGNED_IN") {
-          // If user is signed in but not via recovery, they shouldn't be here ideally
-          // but we handle the reset flow specifically
+          // Auth state logic
         }
       });
 
