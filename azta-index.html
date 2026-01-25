@@ -2,91 +2,405 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Reset Password</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reset Password - 9-th Vojvodina Open ITF</title>
+    <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- FontAwesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <style>
+      /* --- VARIABLES & RESET (Matching Championship Style) --- */
+      :root {
+        --primary: #1a3a6c;
+        --primary-dark: #0d2a52;
+        --secondary: #d4af37;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --success: #28a745;
+        --danger: #dc3545;
+        --warning: #ffc107;
+        --gray: #6c757d;
+        --light-gray: #e9ecef;
+        --border: #dee2e6;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       body {
-        font-family: system-ui, sans-serif;
-        max-width: 500px;
-        margin: 50px auto;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f7fa;
+        color: var(--dark);
+        line-height: 1.6;
+        padding: 20px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* --- LAYOUT --- */
+      .container {
+        max-width: 600px; /* Slightly narrower for a focused auth page */
+        margin: 40px auto;
+        flex: 1;
+      }
+
+      header {
         text-align: center;
+        margin-bottom: 30px;
       }
-      input,
-      button {
-        padding: 10px;
+
+      h1 {
+        font-size: 2rem;
+        color: var(--primary);
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        color: var(--gray);
+        font-size: 1rem;
+      }
+
+      /* --- CARD COMPONENT --- */
+      .card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 30px;
+        border-top: 5px solid var(--primary); /* Branding touch */
+      }
+
+      .card-header {
+        margin-bottom: 25px;
+        text-align: center;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 15px;
+      }
+
+      .card-title {
+        font-size: 1.5rem;
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      /* --- FORM ELEMENTS --- */
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--dark);
+      }
+
+      input {
         width: 100%;
-        max-width: 300px;
-        margin: 8px 0;
+        padding: 12px 15px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: var(--transition);
+        background-color: #fff;
       }
-      .message {
-        margin-top: 12px;
-        color: red;
+
+      input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(26, 58, 108, 0.2);
       }
-      .success {
-        color: green;
+
+      input:disabled {
+        background-color: #e9ecef;
+        cursor: not-allowed;
+        color: #6c757d;
+      }
+
+      .input-error {
+        border-color: var(--danger) !important;
+        background-color: #fff5f5;
+      }
+
+      /* --- BUTTONS --- */
+      .btn {
+        width: 100%;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        font-size: 1rem;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .btn-success {
+        background: var(--success);
+        color: white;
+      }
+
+      .btn-success:hover {
+        background: #218838;
+      }
+
+      .btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+      /* --- STATUS BARS --- */
+      .status-bar {
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: 600;
+        display: none; /* Hidden by default */
+      }
+
+      .status-info {
+        background: #e7f3ff;
+        color: var(--primary);
+      }
+
+      .status-success {
+        background: #d4edda;
+        color: var(--success);
+      }
+
+      .status-error {
+        background: #f8d7da;
+        color: var(--danger);
+      }
+
+      /* --- LOADING SPINNER --- */
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* --- FOOTER --- */
+      footer {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+        color: var(--gray);
+        font-size: 0.85rem;
+      }
+
+      .back-link {
+        display: block;
+        margin-top: 15px;
+        text-align: center;
+        color: var(--gray);
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+
+      .back-link:hover {
+        color: var(--primary);
+        text-decoration: underline;
+      }
+
+      /* Utility */
+      .hidden {
+        display: none !important;
       }
     </style>
   </head>
   <body>
-    <h2>Reset Your Password</h2>
+    <div class="container">
+      <header>
+        <h1>9-th Vojvodina Open ITF</h1>
+        <p class="subtitle">Secure Password Recovery</p>
+      </header>
 
-    <input type="password" id="newPassword" placeholder="New password" />
-    <button id="updateBtn">Update Password</button>
+      <main class="card">
+        <div class="card-header">
+          <h2 class="card-title">Reset Your Password</h2>
+        </div>
 
-    <div id="message" class="message"></div>
+        <!-- Status Feedback Area -->
+        <div id="statusMessage" class="status-bar"></div>
+
+        <!-- Password Input -->
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input
+            type="password"
+            id="newPassword"
+            placeholder="Enter your new password"
+            disabled
+          />
+        </div>
+
+        <!-- Action Button -->
+        <button id="updateBtn" class="btn btn-success" disabled>
+          <i class="fas fa-lock"></i> Update Password
+        </button>
+
+        <a href="https://merky-w.github.io/Competition/azta-index.html" class="back-link">
+          <i class="fas fa-arrow-left"></i> Back to Login
+        </a>
+      </main>
+
+      <footer>
+        <p>
+          9-th Vojvodina Open ITF Taekwondo Championship &copy; 2026 | Official
+          Registration System
+        </p>
+      </footer>
+    </div>
 
     <script>
+      // Supabase configuration
       const SUPABASE_URL = "https://cziwnycosdxeuacslcza.supabase.co";
       const SUPABASE_ANON_KEY =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6aXdueWNvc2R4ZXVhY3NsY3phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3MTkxMDAsImV4cCI6MjA4MjI5NTEwMH0.7OvfatHP7RAp6JS1F5hMlwfdSDgpN7EXsY2SVMoFSoY";
 
       const client = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY,
+        SUPABASE_URL.trim(),
+        SUPABASE_ANON_KEY.trim()
       );
 
-      const messageEl = document.getElementById("message");
-      const newPasswordInput = document.getElementById("newPassword");
+      // DOM Elements
       const updateBtn = document.getElementById("updateBtn");
+      const newPasswordInput = document.getElementById("newPassword");
+      const statusMessage = document.getElementById("statusMessage");
 
       let ready = false;
 
-      // ✅ Supabase automatically detects the recovery session
+      /**
+       * Displays a status message using the styled status bar component
+       * @param {string} msg - The message text
+       * @param {string} type - 'info', 'success', 'error'
+       */
+      function showMessage(msg, type = "info") {
+        statusMessage.textContent = msg;
+        statusMessage.className = "status-bar"; // Reset classes
+        
+        if (type === "success") {
+          statusMessage.classList.add("status-success");
+        } else if (type === "error") {
+          statusMessage.classList.add("status-error");
+        } else {
+          statusMessage.classList.add("status-info");
+        }
+        
+        statusMessage.style.display = "block";
+      }
+
+      /**
+       * Enable the form if the recovery token is valid
+       */
       client.auth.onAuthStateChange((event) => {
         if (event === "PASSWORD_RECOVERY") {
           ready = true;
-          messageEl.textContent = "Enter your new password.";
+          showMessage("Please enter your new password below.", "info");
+          
+          // Enable interaction
+          newPasswordInput.disabled = false;
+          updateBtn.disabled = false;
+          newPasswordInput.focus();
+        } else if (event === "SIGNED_IN") {
+          // If user is signed in but not via recovery, they shouldn't be here ideally
+          // but we handle the reset flow specifically
         }
       });
 
+      /**
+       * Handle Password Update
+       */
       updateBtn.onclick = async () => {
+        // 1. Validation
         if (!ready) {
-          messageEl.textContent = "Invalid or expired reset link.";
+          showMessage("Invalid or expired reset link. Please request a new one.", "error");
           return;
         }
 
         const newPassword = newPasswordInput.value.trim();
         if (!newPassword) {
-          messageEl.textContent = "Enter a new password.";
+          showMessage("Please enter a new password.", "error");
+          newPasswordInput.classList.add("input-error");
+          return;
+        }
+        
+        if (newPassword.length < 6) {
+          showMessage("Password must be at least 6 characters long.", "error");
+          newPasswordInput.classList.add("input-error");
           return;
         }
 
+        // Remove error styles if valid
+        newPasswordInput.classList.remove("input-error");
+
+        // 2. UI Loading State
+        const originalBtnContent = updateBtn.innerHTML;
+        updateBtn.disabled = true;
+        updateBtn.innerHTML = '<span class="loading"></span> Updating...';
+        showMessage("Updating password...", "info");
+
+        // 3. API Call
         const { error } = await client.auth.updateUser({
           password: newPassword,
         });
 
+        // 4. Handle Response
         if (error) {
-          messageEl.textContent = error.message;
+          showMessage(error.message, "error");
+          updateBtn.disabled = false;
+          updateBtn.innerHTML = originalBtnContent;
         } else {
-          messageEl.textContent = "Password updated successfully!";
-          messageEl.classList.add("success");
-          updateBtn.disabled = true;
-
+          showMessage("Password updated successfully! Redirecting...", "success");
+          updateBtn.innerHTML = '<i class="fas fa-check"></i> Success';
+          
+          // 5. Redirect
           setTimeout(() => {
-            window.location.href = "/";
-          }, 3000);
+            window.location.href = "https://merky-w.github.io/Competition/azta-index.html";
+          }, 2500);
         }
       };
+
+      // Clear input error on type
+      newPasswordInput.addEventListener("input", () => {
+        if(newPasswordInput.classList.contains("input-error")) {
+          newPasswordInput.classList.remove("input-error");
+        }
+      });
     </script>
   </body>
 </html>
