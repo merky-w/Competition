@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>9-th Vojvodina Open ITF Taekwondo Championship</title>
+    <title>9-th Vojvodina Open ITF Taekwon-do Championship</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link
       rel="stylesheet"
@@ -445,7 +445,7 @@
           flex-direction: column;
           gap: 1rem;
         }
-        
+
         .form-group {
           width: 100%;
         }
@@ -454,7 +454,7 @@
           flex-direction: column;
           width: 100%;
         }
-        
+
         .btn {
           width: 100%;
           justify-content: center;
@@ -464,7 +464,7 @@
           flex-direction: column;
           width: 100%;
         }
-        
+
         .action-btn {
           width: 100%;
           justify-content: center;
@@ -479,9 +479,9 @@
   <body>
     <div class="container">
       <header>
-        <h1>9-th Vojvodina Open ITF Taekwondo Championship</h1>
+        <h1>9-th Vojvodina Open ITF Taekwon-do Championship</h1>
         <p class="subtitle">
-          Official registration system for competitors, judges, and coaches
+          Official registration system for competitors, referees, and coaches
         </p>
       </header>
 
@@ -494,7 +494,7 @@
           <label for="email">Email Address</label>
           <input type="email" id="email" placeholder="Enter your email" />
         </div>
-        <div class="form-group" style="margin-top: 1rem;">
+        <div class="form-group" style="margin-top: 1rem">
           <label for="password">Password</label>
           <input
             type="password"
@@ -502,7 +502,7 @@
             placeholder="Enter your password"
           />
         </div>
-        <div class="btn-group" style="margin-top: 1.5rem;">
+        <div class="btn-group" style="margin-top: 1.5rem">
           <button id="signupBtn" class="btn btn-primary">
             <i class="fas fa-user-plus"></i> Sign Up
           </button>
@@ -513,14 +513,17 @@
             <i class="fas fa-key"></i> Forgot Password?
           </button>
         </div>
-        <button id="setNewPasswordBtn" class="btn btn-success hidden" style="margin-top: 1rem; width: 100%;">
+        <button
+          id="setNewPasswordBtn"
+          class="btn btn-success hidden"
+          style="margin-top: 1rem; width: 100%"
+        >
           <i class="fas fa-lock"></i> Set New Password
         </button>
       </div>
 
       <!-- COMPETITION SECTION (HIDDEN UNTIL LOGGED IN) -->
       <div id="competitionSection" class="hidden">
-        
         <!-- DASHBOARD CONTAINER -->
         <div class="card">
           <div class="card-header">
@@ -564,11 +567,12 @@
         <!-- ADD ENTRIES SECTION -->
         <div class="card hidden" id="addEntriesSection">
           <div class="card-header">
-            <h2 class="card-title" id="addEntriesTitle">
-              Add Entries
-            </h2>
-            <div style="font-size: 0.9rem; color: var(--gray);">
-              Adding for: <strong id="activeCategoryBadge" style="color: var(--primary);">Competitors</strong>
+            <h2 class="card-title" id="addEntriesTitle">Add Entries</h2>
+            <div style="font-size: 0.9rem; color: var(--gray)">
+              Adding for:
+              <strong id="activeCategoryBadge" style="color: var(--primary)"
+                >Competitors</strong
+              >
             </div>
           </div>
           <div class="form-row">
@@ -618,7 +622,9 @@
       const addEntriesSection = document.getElementById("addEntriesSection");
       const dashboardContainer = document.getElementById("dashboardContainer");
       const addEntriesTitle = document.getElementById("addEntriesTitle");
-      const activeCategoryBadge = document.getElementById("activeCategoryBadge");
+      const activeCategoryBadge = document.getElementById(
+        "activeCategoryBadge",
+      );
 
       // State variables
       let editingRow = null;
@@ -687,7 +693,7 @@
         if (teamNameGlobal) {
           teamDisplay.classList.remove("hidden");
           // Only show add section if a section is open
-          if(openSectionId) addEntriesSection.classList.remove("hidden"); 
+          if (openSectionId) addEntriesSection.classList.remove("hidden");
         } else {
           teamDisplay.classList.add("hidden");
           addEntriesSection.classList.add("hidden");
@@ -814,7 +820,11 @@
             client.from("coaches").select("*").eq("user_id", currentUserId),
           ]);
 
-          renderDashboard(compRes.data || [], judgeRes.data || [], coachRes.data || []);
+          renderDashboard(
+            compRes.data || [],
+            judgeRes.data || [],
+            coachRes.data || [],
+          );
         } catch (err) {
           console.error("Dashboard error:", err);
           dashboardContainer.innerHTML =
@@ -826,15 +836,25 @@
         dashboardContainer.innerHTML = "";
 
         const sections = [
-          { id: "competitors", data: competitors, icon: "fa-user-friends", label: "Competitors" },
-          { id: "judges", data: judges, icon: "fa-gavel", label: "Judges" },
-          { id: "coaches", data: coaches, icon: "fa-chalkboard-teacher", label: "Coaches" }
+          {
+            id: "competitors",
+            data: competitors,
+            icon: "fa-user-friends",
+            label: "Competitors",
+          },
+          { id: "judges", data: judges, icon: "fa-gavel", label: "Referees" },
+          {
+            id: "coaches",
+            data: coaches,
+            icon: "fa-chalkboard-teacher",
+            label: "Coaches",
+          },
         ];
 
-        sections.forEach(section => {
+        sections.forEach((section) => {
           const count = section.data.length;
           const isOpen = openSectionId === section.id;
-          
+
           // Create Section HTML
           const sectionEl = document.createElement("div");
           sectionEl.className = "dashboard-section";
@@ -855,12 +875,12 @@
           `;
 
           // Content HTML (List)
-          let contentHtml = `<div class="dashboard-content ${isOpen ? 'open' : ''}"><div class="dashboard-list">`;
-          
+          let contentHtml = `<div class="dashboard-content ${isOpen ? "open" : ""}"><div class="dashboard-list">`;
+
           if (count === 0) {
             contentHtml += `<div style="text-align:center; color:var(--gray); padding:1rem;">No ${section.label.toLowerCase()} added yet.</div>`;
           } else {
-            section.data.forEach(row => {
+            section.data.forEach((row) => {
               contentHtml += createEntryCardHtml(row, section.id);
             });
           }
@@ -870,22 +890,32 @@
           dashboardContainer.appendChild(sectionEl);
 
           // Attach Event Listeners to buttons inside this section
-          if(count > 0) {
-            section.data.forEach(row => {
-              const editBtn = sectionEl.querySelector(`.edit-btn[data-id="${row.id}"]`);
-              const deleteBtn = sectionEl.querySelector(`.delete-btn[data-id="${row.id}"]`);
-              
-              if(editBtn) editBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                startEdit(row);
-              });
-              if(deleteBtn) deleteBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                if(confirm("Are you sure you want to delete this entry?")) {
-                   client.from(section.id).delete().eq("id", row.id).eq("user_id", currentUserId)
-                   .then(() => loadDashboard());
-                }
-              });
+          if (count > 0) {
+            section.data.forEach((row) => {
+              const editBtn = sectionEl.querySelector(
+                `.edit-btn[data-id="${row.id}"]`,
+              );
+              const deleteBtn = sectionEl.querySelector(
+                `.delete-btn[data-id="${row.id}"]`,
+              );
+
+              if (editBtn)
+                editBtn.addEventListener("click", (e) => {
+                  e.stopPropagation();
+                  startEdit(row);
+                });
+              if (deleteBtn)
+                deleteBtn.addEventListener("click", (e) => {
+                  e.stopPropagation();
+                  if (confirm("Are you sure you want to delete this entry?")) {
+                    client
+                      .from(section.id)
+                      .delete()
+                      .eq("id", row.id)
+                      .eq("user_id", currentUserId)
+                      .then(() => loadDashboard());
+                  }
+                });
             });
           }
         });
@@ -893,18 +923,18 @@
 
       function toggleSection(sectionId) {
         const wasOpen = openSectionId === sectionId;
-        
+
         // Close all first (accordion style) or keep open? Let's do accordion (one at a time) for cleanliness
         openSectionId = wasOpen ? null : sectionId;
-        
+
         // Update UI
         renderDashboardBasedOnState();
-        
+
         // Set Current Category
         if (openSectionId) {
           setCategory(openSectionId);
         } else {
-           addEntriesSection.classList.add("hidden");
+          addEntriesSection.classList.add("hidden");
         }
       }
 
@@ -912,7 +942,7 @@
       // For simplicity, we will just refetch or store data. Since we fetched in loadDashboard, let's just reload.
       // Actually, let's just call loadDashboard to keep it simple and fresh.
       async function renderDashboardBasedOnState() {
-        // We need current data to re-render. 
+        // We need current data to re-render.
         // To avoid full reload complexity, let's just toggle classes manually or reload.
         // Reloading is safer for data consistency.
         await loadDashboard();
@@ -961,22 +991,26 @@
         updateAddEntriesTitle();
         // Ensure add section is visible if team is set
         if (teamNameGlobal) {
-           addEntriesSection.classList.remove("hidden");
-           // Scroll to add section smoothly
-           setTimeout(() => {
-             addEntriesSection.scrollIntoView({ behavior: "smooth", block: "start" });
-           }, 300);
+          addEntriesSection.classList.remove("hidden");
+          // Scroll to add section smoothly
+          setTimeout(() => {
+            addEntriesSection.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }, 300);
         }
       }
 
       function updateAddEntriesTitle() {
         const titleMap = {
-          "competitors": "Add Competitor Entries",
-          "judges": "Add Judge Entries",
-          "coaches": "Add Coach Entries"
+          competitors: "Add Competitor Entries",
+          judges: "Add Judge Entries",
+          coaches: "Add Coach Entries",
         };
         addEntriesTitle.textContent = titleMap[currentCategory];
-        activeCategoryBadge.textContent = currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
+        activeCategoryBadge.textContent =
+          currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
       }
 
       // --- EDIT LOGIC ---
@@ -986,15 +1020,15 @@
         editingRow = row;
 
         // If the section for this row isn't open, force it open
-        const cat = determineCategoryFromRow(row); 
+        const cat = determineCategoryFromRow(row);
         if (openSectionId !== cat) {
-           openSectionId = cat;
-           setCategory(cat);
-           loadDashboard(); // Refresh to show section open
-           // We need to wait for render to finish before appending edit form
-           setTimeout(() => executeEditFlow(row), 100);
+          openSectionId = cat;
+          setCategory(cat);
+          loadDashboard(); // Refresh to show section open
+          // We need to wait for render to finish before appending edit form
+          setTimeout(() => executeEditFlow(row), 100);
         } else {
-           executeEditFlow(row);
+          executeEditFlow(row);
         }
       }
 
@@ -1058,8 +1092,7 @@
         const cat = currentCategory;
 
         let data = null;
-        if (cat === "competitors")
-          data = getCompetitorData(editingCard);
+        if (cat === "competitors") data = getCompetitorData(editingCard);
         else if (cat === "judges") data = getJudgeData(editingCard);
         else data = getCoachData(editingCard);
 
@@ -1083,16 +1116,15 @@
 
           showAlert("Updated successfully!", "success");
           exitEditMode();
-          
+
           // Reload dashboard to show changes
           await loadDashboard();
-          
+
           // Scroll back to the section list
           const sectionEl = document.getElementById(`section-${cat}`);
-          if(sectionEl) {
+          if (sectionEl) {
             sectionEl.scrollIntoView({ behavior: "smooth", block: "start" });
           }
-
         } catch (err) {
           console.error("Update error:", err);
           showAlert("Update failed: " + err.message, "error");
@@ -1134,9 +1166,18 @@
 
         try {
           const updatePromises = [
-            client.from("competitors").update({ team: newTeamName }).eq("user_id", currentUserId),
-            client.from("judges").update({ team: newTeamName }).eq("user_id", currentUserId),
-            client.from("coaches").update({ team: newTeamName }).eq("user_id", currentUserId),
+            client
+              .from("competitors")
+              .update({ team: newTeamName })
+              .eq("user_id", currentUserId),
+            client
+              .from("judges")
+              .update({ team: newTeamName })
+              .eq("user_id", currentUserId),
+            client
+              .from("coaches")
+              .update({ team: newTeamName })
+              .eq("user_id", currentUserId),
           ];
 
           await Promise.all(updatePromises);
@@ -1241,7 +1282,11 @@
 
         const required = [
           [name, wrap.querySelector(".field-name"), "Name is required"],
-          [birthdate, wrap.querySelector(".field-birthdate"), "Birth date is required"],
+          [
+            birthdate,
+            wrap.querySelector(".field-birthdate"),
+            "Birth date is required",
+          ],
           [gender, wrap.querySelector(".field-gender"), "Gender is required"],
           [belt, wrap.querySelector(".field-belt"), "Belt rank is required"],
           [team, wrap.querySelector(".field-team"), "Team name is required"],
@@ -1262,7 +1307,10 @@
         const name = wrap.querySelector(".field-name").value.trim();
         const belt = wrap.querySelector(".field-belt").value.trim();
         const team = wrap.querySelector(".field-team").value.trim();
-        if (!name || !belt || !team) { showError(wrap, "All fields are required"); return null; }
+        if (!name || !belt || !team) {
+          showError(wrap, "All fields are required");
+          return null;
+        }
         return { name, belt, team };
       }
 
@@ -1270,7 +1318,10 @@
         const name = wrap.querySelector(".field-name").value.trim();
         const belt = wrap.querySelector(".field-belt").value.trim();
         const team = wrap.querySelector(".field-team").value.trim();
-        if (!name || !belt || !team) { showError(wrap, "All fields are required"); return null; }
+        if (!name || !belt || !team) {
+          showError(wrap, "All fields are required");
+          return null;
+        }
         return { name, belt, team };
       }
 
@@ -1278,17 +1329,27 @@
         if (!currentUserId) return showAlert("You must be logged in.", "error");
         if (isEditing) return showAlert("Finish editing first.", "warning");
 
-        const count = parseInt(document.getElementById("countInput").value || "0", 10);
-        if (isNaN(count) || count < 1) return showAlert("Enter a number ≥ 1", "error");
+        const count = parseInt(
+          document.getElementById("countInput").value || "0",
+          10,
+        );
+        if (isNaN(count) || count < 1)
+          return showAlert("Enter a number ≥ 1", "error");
 
         clearGenerated();
         for (let i = 0; i < count; i++) {
-          if (currentCategory === "competitors") container.appendChild(makeCompetitorCard(i + 1));
-          else if (currentCategory === "judges") container.appendChild(makeJudgeCard(i + 1));
+          if (currentCategory === "competitors")
+            container.appendChild(makeCompetitorCard(i + 1));
+          else if (currentCategory === "judges")
+            container.appendChild(makeJudgeCard(i + 1));
           else container.appendChild(makeCoachCard(i + 1));
         }
-        
-        setTimeout(() => container.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+
+        setTimeout(
+          () =>
+            container.scrollIntoView({ behavior: "smooth", block: "start" }),
+          100,
+        );
 
         const addAll = document.createElement("button");
         addAll.className = "btn btn-success";
@@ -1303,7 +1364,8 @@
         if (isEditing) return showAlert("Finish editing first.", "warning");
 
         const cards = Array.from(container.querySelectorAll(".card"));
-        if (cards.length === 0) return showAlert("Generate fields first.", "error");
+        if (cards.length === 0)
+          return showAlert("Generate fields first.", "error");
 
         let rows = [];
         let skipped = 0;
@@ -1312,10 +1374,15 @@
         for (const c of cards) {
           if (c.querySelector(".btn")) continue;
           const inputs = Array.from(c.querySelectorAll("input, select"));
-          const nonTeamFields = inputs.filter((el) => !el.classList.contains("field-team"));
+          const nonTeamFields = inputs.filter(
+            (el) => !el.classList.contains("field-team"),
+          );
           const allNonTeamEmpty = nonTeamFields.every((el) => !el.value.trim());
 
-          if (allNonTeamEmpty) { skipped++; continue; }
+          if (allNonTeamEmpty) {
+            skipped++;
+            continue;
+          }
 
           let data = null;
           if (currentCategory === "competitors") data = getCompetitorData(c);
@@ -1323,7 +1390,9 @@
           else data = getCoachData(c);
 
           if (!data) {
-            nonTeamFields.forEach((el) => { if (!el.value.trim()) markMissing(el); });
+            nonTeamFields.forEach((el) => {
+              if (!el.value.trim()) markMissing(el);
+            });
             showError(c, "Fill all required fields or leave entry empty");
             hasError = true;
             continue;
@@ -1332,30 +1401,45 @@
         }
 
         if (hasError) return showAlert("Incomplete entries found.", "error");
-        if (rows.length === 0) return showAlert("No valid entries to add.", "warning");
+        if (rows.length === 0)
+          return showAlert("No valid entries to add.", "warning");
 
         const addAllBtn = container.querySelector(".btn.btn-success");
-        if (addAllBtn) { addAllBtn.disabled = true; addAllBtn.innerHTML = '<span class="loading"></span> Adding...'; }
+        if (addAllBtn) {
+          addAllBtn.disabled = true;
+          addAllBtn.innerHTML = '<span class="loading"></span> Adding...';
+        }
 
         try {
           const { error } = await client.from(currentCategory).insert(rows);
           if (error) throw error;
-          
+
           let msg = `Added ${rows.length} ${currentCategory}.`;
           if (skipped > 0) msg += ` Skipped ${skipped} empty entries.`;
           showAlert(msg, "success");
           clearGenerated();
           loadDashboard();
-          
-          const sectionEl = document.getElementById(`section-${currentCategory}`);
-          if(sectionEl) {
-            setTimeout(() => sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-          }
 
+          const sectionEl = document.getElementById(
+            `section-${currentCategory}`,
+          );
+          if (sectionEl) {
+            setTimeout(
+              () =>
+                sectionEl.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                }),
+              100,
+            );
+          }
         } catch (err) {
           showAlert(`Failed: ${err.message}`, "error");
         } finally {
-          if (addAllBtn) { addAllBtn.disabled = false; addAllBtn.innerHTML = `<i class="fas fa-plus"></i> Add All ${currentCategory}`; }
+          if (addAllBtn) {
+            addAllBtn.disabled = false;
+            addAllBtn.innerHTML = `<i class="fas fa-plus"></i> Add All ${currentCategory}`;
+          }
         }
       }
 
@@ -1368,12 +1452,27 @@
         alertDiv.textContent = message;
 
         if (authSection.classList.contains("hidden")) {
-          competitionSection.insertBefore(alertDiv, competitionSection.firstChild);
-          setTimeout(() => competitionSection.scrollIntoView({ behavior: 'smooth', block: 'start' }), 10);
+          competitionSection.insertBefore(
+            alertDiv,
+            competitionSection.firstChild,
+          );
+          setTimeout(
+            () =>
+              competitionSection.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              }),
+            10,
+          );
         } else {
-          authSection.parentNode.insertBefore(alertDiv, authSection.nextSibling);
+          authSection.parentNode.insertBefore(
+            alertDiv,
+            authSection.nextSibling,
+          );
         }
-        setTimeout(() => { if (alertDiv.parentNode) alertDiv.remove(); }, 5000);
+        setTimeout(() => {
+          if (alertDiv.parentNode) alertDiv.remove();
+        }, 5000);
       }
     </script>
   </body>
