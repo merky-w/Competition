@@ -2,210 +2,568 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Competition sign up</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>9-th Vojvodina Open ITF Taekwondo Championship</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
     <style>
-      /* ===== GLOBAL STYLES ===== */
+      :root {
+        --primary: #1a3a6c;
+        --primary-dark: #0d2a52;
+        --secondary: #d4af37;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --success: #28a745;
+        --danger: #dc3545;
+        --warning: #ffc107;
+        --gray: #6c757d;
+        --light-gray: #e9ecef;
+        --border: #dee2e6;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
       body {
-        font-family: system-ui, sans-serif;
-        max-width: 900px;
-        margin: 24px auto;
-        padding: 0 16px;
-        background-color: #f7f7f7;
-        color: #333;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f7fa;
+        color: var(--dark);
+        line-height: 1.6;
+        padding: 20px;
+        min-height: 100vh;
       }
 
-      h2,
-      h3,
-      h4 {
-        margin: 12px 0;
-        font-family: "Segoe UI", sans-serif;
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
       }
 
-      h3 {
-        border-bottom: 1px solid #ddd;
-        padding-bottom: 4px;
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px 0;
       }
 
-      .row {
+      h1 {
+        font-size: 2.5rem;
+        color: var(--primary);
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        color: var(--gray);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        padding: 25px;
+        margin-bottom: 25px;
+        transition: var(--transition);
+      }
+
+      .card:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .card-header {
         display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-        margin-bottom: 8px;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border);
       }
 
-      .row > * {
-        flex: 1 1 200px;
+      .card-title {
+        font-size: 1.5rem;
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .btn-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+      }
+
+      .btn-primary {
+        background: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: var(--primary-dark);
+      }
+
+      .btn-secondary {
+        background: var(--light-gray);
+        color: var(--dark);
+      }
+
+      .btn-secondary:hover {
+        background: #dcdcdc;
+      }
+
+      .btn-success {
+        background: var(--success);
+        color: white;
+      }
+
+      .btn-success:hover {
+        background: #218838;
+      }
+
+      .btn-danger {
+        background: var(--danger);
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background: #c82333;
+      }
+
+      .btn-warning {
+        background: var(--warning);
+        color: var(--dark);
+      }
+
+      .btn-warning:hover {
+        background: #e0a800;
+      }
+
+      .form-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+      }
+
+      .form-group {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--dark);
       }
 
       input,
-      select,
-      button {
-        padding: 8px;
-        font-size: 14px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        transition:
-          border 0.2s ease,
-          background-color 0.2s ease,
-          transform 0.1s ease;
+      select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: var(--transition);
       }
 
       input:focus,
       select:focus {
-        outline: 2px solid #1976d2;
-        background-color: #e3f2fd;
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(26, 58, 108, 0.2);
       }
 
-      input[type="number"] {
-        -moz-appearance: textfield;
-      }
-      input[type="number"]::-webkit-inner-spin-button,
-      input[type="number"]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
+      input:disabled {
+        background-color: #e9ecef;
+        cursor: not-allowed;
+        color: #6c757d;
       }
 
-      button {
-        cursor: pointer;
-        border: 1px solid #1976d2;
-        background-color: #2196f3;
-        color: white;
-        border-radius: 4px;
-      }
-      button:hover {
-        background-color: #1976d2;
-        transform: translateY(-1px);
-      }
-      button:active {
-        transform: translateY(1px);
+      .input-error {
+        border-color: var(--danger) !important;
+        background-color: #fff5f5;
       }
 
-      /* ===== ERROR STYLING ===== */
-      .error {
-        border: 2px solid #d32f2f !important;
-        background: #ffebee;
-      }
       .error-text {
-        font-weight: bold;
-        color: #d32f2f;
-        background-color: #ffebee;
-        padding: 4px 8px;
-        border-left: 4px solid #d32f2f;
-        border-radius: 4px;
-        margin: 8px 0;
+        color: var(--danger);
+        margin-top: 8px;
+        font-size: 0.9rem;
+        display: none;
+      }
+
+      .error-text.show {
         display: block;
       }
 
-      .ok-text {
-        color: #2e7d32;
-        margin: 8px 0;
-        font-weight: bold;
+      .status-bar {
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .status-info {
+        background: #e7f3ff;
+        color: var(--primary);
+      }
+
+      .status-success {
+        background: #d4edda;
+        color: var(--success);
+      }
+
+      .entry-list {
+        margin-top: 20px;
+      }
+
+      .entry-card {
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 18px;
+        margin-bottom: 15px;
+        transition: var(--transition);
+      }
+
+      .entry-card:hover {
+        border-color: var(--primary);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .entry-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      .entry-name {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--primary);
+      }
+
+      .entry-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 12px;
+        margin-bottom: 15px;
+      }
+
+      .detail-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .detail-label {
+        font-size: 0.85rem;
+        color: var(--gray);
+        margin-bottom: 4px;
+      }
+
+      .detail-value {
+        font-weight: 600;
+      }
+
+      .entry-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+
+      .action-btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.9rem;
+      }
+
+      .edit-btn {
+        background: #e9ecef;
+        color: var(--primary);
+      }
+
+      .edit-btn:hover {
+        background: #dde0e3;
+      }
+
+      .delete-btn {
+        background: #f8d7da;
+        color: var(--danger);
+      }
+
+      .delete-btn:hover {
+        background: #f1b0b7;
       }
 
       .hidden {
         display: none !important;
       }
 
-      /* ===== SECTIONS ===== */
-      .section {
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 12px;
-        margin: 12px 0;
-        background-color: #fff;
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(26, 58, 108, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--primary);
+        animation: spin 1s ease-in-out infinite;
       }
 
-      .list {
-        border-top: 1px dashed #ccc;
-        padding-top: 8px;
-        margin-top: 8px;
-        background-color: #fafafa;
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loading-text {
+        margin-left: 10px;
+        color: var(--gray);
+      }
+
+      .category-indicator {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        background: var(--primary);
+        color: white;
+      }
+
+      .team-display {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 10px;
+        padding: 8px 15px;
+        background: #e7f3ff;
         border-radius: 6px;
+        font-weight: 600;
       }
 
-      .entry {
-        margin-bottom: 8px;
-        padding: 6px;
-        border-bottom: 1px dotted #ccc;
+      .team-icon {
+        color: var(--primary);
       }
 
-      small {
-        font-size: 0.8em;
-        color: #555;
+      footer {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+        color: var(--gray);
+        font-size: 0.9rem;
       }
 
-      /* ===== GENERATED CARDS ===== */
-      #generatedContainer .section {
-        margin-bottom: 12px;
-      }
+      @media (max-width: 768px) {
+        .form-row {
+          flex-direction: column;
+          gap: 15px;
+        }
 
-      .section.competitor {
-        border-left: 4px solid #42a5f5;
-      }
-      .section.judge {
-        border-left: 4px solid #66bb6a;
-      }
-      .section.coach {
-        border-left: 4px solid #ffa726;
-      }
+        .btn-group {
+          flex-direction: column;
+        }
 
-      .field-team {
-        background-color: #f5f5f5;
+        .entry-actions {
+          flex-direction: column;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
       }
     </style>
   </head>
   <body>
-    <h2>9-th Vojvodina open ITF teakwondo-championship</h2>
+    <div class="container">
+      <header>
+        <h1>9-th Vojvodina Open ITF Taekwondo Championship</h1>
+        <p class="subtitle">
+          Official registration system for competitors, judges, and coaches
+        </p>
+      </header>
 
-    <!-- AUTH SECTION -->
-    <div id="authSection" class="section">
-      <h3>Login / Signup</h3>
-      <input type="email" id="email" placeholder="Enter your email" />
-      <input type="password" id="password" placeholder="Enter your password" />
-      <button id="setNewPasswordBtn" class="hidden">Set new password</button>
-      <button id="signupBtn">Sign up</button>
-      <button id="signinBtn">Sign in</button>
-      <button id="forgotBtn" type="button">Forgot password?</button>
-    </div>
-
-    <!-- COMPETITION SECTION (HIDDEN UNTIL LOGGED IN) -->
-    <div id="competitionSection" class="hidden">
-      <div class="row">
-        <button id="competitorsBtn">Competitors</button>
-        <button id="judgesBtn">Judges</button>
-        <button id="coachesBtn">Coaches</button>
+      <!-- AUTH SECTION -->
+      <div id="authSection" class="card">
+        <div class="card-header">
+          <h2 class="card-title">Account Access</h2>
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="Enter your email" />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+          />
+        </div>
+        <div class="btn-group">
+          <button id="signupBtn" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Sign Up
+          </button>
+          <button id="signinBtn" class="btn btn-secondary">
+            <i class="fas fa-sign-in-alt"></i> Sign In
+          </button>
+          <button id="forgotBtn" class="btn btn-warning">
+            <i class="fas fa-key"></i> Forgot Password?
+          </button>
+        </div>
+        <button id="setNewPasswordBtn" class="btn btn-success hidden">
+          <i class="fas fa-lock"></i> Set New Password
+        </button>
       </div>
-      <div id="categoryInfo" class="ok-text">Current category: competitors</div>
-      <div id="listContainer" class="list"></div>
 
-      <div class="section">
-        <h3>Set Team Name</h3>
-        <input type="text" id="teamNameInput" placeholder="Team name" />
-        <button id="setTeamBtn">Set Team</button>
+      <!-- COMPETITION SECTION (HIDDEN UNTIL LOGGED IN) -->
+      <div id="competitionSection" class="hidden">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Registration Dashboard</h2>
+            <div class="btn-group">
+              <button id="competitorsBtn" class="btn btn-primary">
+                <i class="fas fa-user-friends"></i> Competitors
+              </button>
+              <button id="judgesBtn" class="btn btn-secondary">
+                <i class="fas fa-gavel"></i> Judges
+              </button>
+              <button id="coachesBtn" class="btn btn-secondary">
+                <i class="fas fa-chalkboard-teacher"></i> Coaches
+              </button>
+            </div>
+          </div>
+
+          <div id="categoryInfo" class="status-bar status-info">
+            Current category:
+            <span id="currentCategoryDisplay">competitors</span>
+            <span id="teamDisplay" class="team-display hidden">
+              <i class="fas fa-users team-icon"></i>
+              <span id="teamNameDisplay">Team Name</span>
+            </span>
+          </div>
+
+          <div id="listContainer" class="entry-list"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Team Management</h2>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="teamNameInput">Team Name</label>
+              <input
+                type="text"
+                id="teamNameInput"
+                placeholder="Enter your team name"
+              />
+            </div>
+            <div class="form-group" style="align-self: flex-end">
+              <button id="setTeamBtn" class="btn btn-primary">
+                <i class="fas fa-save"></i> Save Team
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADD ENTRIES SECTION - HIDDEN INITIALLY UNTIL TEAM IS SET -->
+        <div class="card hidden" id="addEntriesSection">
+          <div class="card-header">
+            <h2 class="card-title" id="addEntriesTitle">
+              Add Competitor Entries
+            </h2>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="countInput">Number of Entries</label>
+              <input
+                type="number"
+                id="countInput"
+                placeholder="How many?"
+                min="1"
+              />
+            </div>
+            <div class="form-group" style="align-self: flex-end">
+              <button id="generateBtn" class="btn btn-primary">
+                <i class="fas fa-plus-circle"></i> Generate Fields
+              </button>
+            </div>
+          </div>
+          <div id="generatedContainer"></div>
+        </div>
       </div>
 
-      <div class="section hidden" id="addEntriesSection">
-        <h3 id="addEntriesTitle">Add Entries</h3>
-        <input type="number" id="countInput" placeholder="How many?" min="1" />
-        <button id="generateBtn">Generate fields</button>
-        <div id="generatedContainer"></div>
-      </div>
+      <footer>
+        <p>
+          9-th Vojvodina Open ITF Taekwondo Championship &copy; 2026 | Official
+          Registration System
+        </p>
+      </footer>
     </div>
 
     <script>
-      /* ===== YOUR ORIGINAL JS CODE ===== */
+      // Supabase configuration
       const SUPABASE_URL = "https://cziwnycosdxeuacslcza.supabase.co";
       const SUPABASE_ANON_KEY =
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6aXdueWNvc2R4ZXVhY3NsY3phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3MTkxMDAsImV4cCI6MjA4MjI5NTEwMH0.7OvfatHP7RAp6JS1F5hMlwfdSDgpN7EXsY2SVMoFSoY";
       const client = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY,
+        SUPABASE_URL.trim(),
+        SUPABASE_ANON_KEY.trim(),
       );
 
-      // ===== PASSWORD RECOVERY HANDLING =====
-      let isRecoveryFlow = false;
+      // DOM elements
+      const container = document.getElementById("generatedContainer");
+      const authSection = document.getElementById("authSection");
+      const competitionSection = document.getElementById("competitionSection");
+      const categoryInfo = document.getElementById("categoryInfo");
+      const currentCategoryDisplay = document.getElementById(
+        "currentCategoryDisplay",
+      );
+      const teamDisplay = document.getElementById("teamDisplay");
+      const teamNameDisplay = document.getElementById("teamNameDisplay");
+      const addEntriesSection = document.getElementById("addEntriesSection");
 
+      // State variables
+      let editingRow = null;
+      let editingCard = null;
+      let isEditing = false;
+      let isRecoveryFlow = false;
+      let teamNameGlobal = "";
+      let currentCategory = "competitors";
+      let currentUserId = null;
+
+      // Initialize UI
+      updateAddEntriesTitle();
+
+      // Auth state change handler
       client.auth.onAuthStateChange((event, session) => {
         if (event === "PASSWORD_RECOVERY") {
           isRecoveryFlow = true;
@@ -223,20 +581,75 @@
         }
       });
 
-      let teamNameGlobal = "";
-      let currentCategory = "competitors";
-      let currentUserId = null;
+      // --- FUNCTION: Fetch Team from DB ---
+      async function fetchExistingTeam() {
+        if (!currentUserId) return;
 
-      // ===== AUTH HANDLERS =====
+        const checkTable = async (tableName) => {
+          const { data, error } = await client
+            .from(tableName)
+            .select("team")
+            .eq("user_id", currentUserId)
+            .limit(1);
+
+          if (error) {
+            console.error(`Error checking ${tableName}:`, error);
+            return null;
+          }
+
+          if (data && data.length > 0 && data[0].team) {
+            return data[0].team.trim();
+          }
+          return null;
+        };
+
+        let foundTeam = await checkTable("competitors");
+        if (!foundTeam) foundTeam = await checkTable("judges");
+        if (!foundTeam) foundTeam = await checkTable("coaches");
+
+        if (foundTeam) {
+          // Team found: Auto-fill and Show Entries
+          applyTeam(foundTeam.toUpperCase());
+        } else {
+          // No team found: Ensure UI is clean
+          applyTeam("");
+        }
+      }
+
+      /**
+       * applyTeam
+       * Sets the global team state and updates the UI.
+       * If teamName exists, it reveals the "Add Entries" section.
+       * Input and Button are always available for modification.
+       */
+      function applyTeam(teamName) {
+        teamNameGlobal = teamName;
+        const input = document.getElementById("teamNameInput");
+
+        input.value = teamNameGlobal;
+        teamNameDisplay.textContent = teamNameGlobal;
+
+        if (teamNameGlobal) {
+          teamDisplay.classList.remove("hidden");
+          addEntriesSection.classList.remove("hidden"); // Reveal Add Entries
+        } else {
+          teamDisplay.classList.add("hidden");
+          addEntriesSection.classList.add("hidden"); // Hide Add Entries
+        }
+      }
+
+      // Auth handlers
       document
         .getElementById("signupBtn")
         .addEventListener("click", async () => {
           const email = document.getElementById("email").value.trim();
           const password = document.getElementById("password").value;
-          if (!email || !password) return alert("Email and password required.");
+          if (!email || !password)
+            return showAlert("Email and password required.", "error");
+
           const { error } = await client.auth.signUp({ email, password });
-          if (error) alert(error.message);
-          else alert("Check your email to confirm signup.");
+          if (error) showAlert(error.message, "error");
+          else showAlert("Check your email to confirm signup.", "success");
         });
 
       document
@@ -244,27 +657,32 @@
         .addEventListener("click", async () => {
           const email = document.getElementById("email").value.trim();
           const password = document.getElementById("password").value;
-          if (!email || !password) return alert("Email and password required.");
+          if (!email || !password)
+            return showAlert("Email and password required.", "error");
 
-          const { error } = await client.auth.signInWithPassword({
+          const { data, error } = await client.auth.signInWithPassword({
             email,
             password,
           });
           if (error) {
-            alert(error.message);
+            showAlert(error.message, "error");
             return;
           }
 
-          const { data: userData } = await client.auth.getUser();
-          if (userData?.user) {
-            currentUserId = userData.user.id;
-            document.getElementById("authSection").classList.add("hidden");
-            document
-              .getElementById("competitionSection")
-              .classList.remove("hidden");
-            loadEntries(); // Load data immediately after login
+          if (data?.session?.user) {
+            currentUserId = data.session.user.id;
+
+            // IMPORTANT: Fetch team before showing UI to determine visibility
+            await fetchExistingTeam();
+
+            authSection.classList.add("hidden");
+            competitionSection.classList.remove("hidden");
+            loadEntries();
           } else {
-            alert("Authentication succeeded but user data not available.");
+            showAlert(
+              "Authentication succeeded but user data not available.",
+              "error",
+            );
           }
         });
 
@@ -273,7 +691,7 @@
         .addEventListener("click", async () => {
           const emailValue = document.getElementById("email").value.trim();
           if (!emailValue) {
-            alert("Please enter your email first.");
+            showAlert("Please enter your email first.", "error");
             return;
           }
 
@@ -286,11 +704,61 @@
           );
 
           if (error) {
-            alert(error.message);
+            showAlert(error.message, "error");
           } else {
-            alert("Password reset email sent. Check your inbox.");
+            showAlert(
+              "Password reset email sent. Check your inbox.",
+              "success",
+            );
           }
         });
+
+      document
+        .getElementById("setNewPasswordBtn")
+        .addEventListener("click", async () => {
+          if (!isRecoveryFlow) {
+            showAlert(
+              "This page was not opened from a password reset email.",
+              "error",
+            );
+            return;
+          }
+
+          const newPassword = document.getElementById("password").value;
+          if (!newPassword || newPassword.length < 6) {
+            showAlert("Password must be at least 6 characters.", "error");
+            return;
+          }
+
+          const { error } = await client.auth.updateUser({
+            password: newPassword,
+          });
+          if (error) {
+            showAlert(error.message, "error");
+          } else {
+            showAlert(
+              "Password updated successfully. You can now log in.",
+              "success",
+            );
+            location.href =
+              "https://merky-w.github.io/Competition/azta-index.html";
+          }
+        });
+
+      // Category switching
+      function setCategory(cat) {
+        currentCategory = cat;
+        currentCategoryDisplay.textContent = cat;
+        updateAddEntriesTitle();
+        loadEntries();
+      }
+
+      document.getElementById("competitorsBtn").onclick = () =>
+        setCategory("competitors");
+      document.getElementById("judgesBtn").onclick = () =>
+        setCategory("judges");
+      document.getElementById("coachesBtn").onclick = () =>
+        setCategory("coaches");
 
       function updateAddEntriesTitle() {
         const title = document.getElementById("addEntriesTitle");
@@ -303,163 +771,315 @@
         else title.textContent = "Add Coach Entries";
       }
 
-      // ===== SET NEW PASSWORD BUTTON LOGIC =====
-      document
-        .getElementById("setNewPasswordBtn")
-        .addEventListener("click", async () => {
-          if (!isRecoveryFlow) {
-            alert("This page was not opened from a password reset email.");
-            return;
-          }
+      // Edit mode
+      function startEdit(row) {
+        isEditing = true;
+        editingRow = row;
 
-          const newPassword = document.getElementById("password").value;
-          if (!newPassword || newPassword.length < 6) {
-            alert("Password must be at least 6 characters.");
-            return;
-          }
+        document.getElementById("generateBtn").disabled = true;
+        document.getElementById("setTeamBtn").disabled = true;
+        document.getElementById("countInput").disabled = true;
 
-          const { error } = await client.auth.updateUser({
-            password: newPassword,
-          });
+        document.getElementById("addEntriesSection").classList.remove("hidden");
+        clearGenerated();
 
-          if (error) {
-            alert(error.message);
-          } else {
-            alert("Password updated successfully. You can now log in.");
-            location.href =
-              "https://merky-w.github.io/Competition/azta-index.html";
-          }
-        });
+        let card;
+        if (currentCategory === "competitors") {
+          card = makeCompetitorCard(1);
+          card.querySelector(".field-name").value = row.name;
+          card.querySelector(".field-birthdate").value = row.birthdate;
+          card.querySelector(".field-gender").value = row.gender;
+          card.querySelector(".field-belt").value = row.belt;
+          card.querySelector(".field-team").value = row.team;
+          card.querySelector(".field-weight").value = row.weight;
+        } else {
+          card =
+            currentCategory === "judges" ? makeJudgeCard(1) : makeCoachCard(1);
+          card.querySelector(".field-name").value = row.name;
+          card.querySelector(".field-belt").value = row.belt;
+          card.querySelector(".field-team").value = row.team;
+        }
 
-      // ===== CATEGORY SWITCHING =====
-      function setCategory(cat) {
-        currentCategory = cat;
-        document.getElementById("categoryInfo").textContent =
-          "Current category: " + cat;
+        editingCard = card;
+        container.appendChild(card);
 
-        updateAddEntriesTitle();
-        loadEntries();
+        const saveBtn = document.createElement("button");
+        saveBtn.className = "btn btn-success";
+        saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+        saveBtn.style.marginTop = "20px";
+        saveBtn.onclick = saveEdit;
+        container.appendChild(saveBtn);
       }
 
-      document.getElementById("competitorsBtn").onclick = () =>
-        setCategory("competitors");
-      document.getElementById("judgesBtn").onclick = () =>
-        setCategory("judges");
-      document.getElementById("coachesBtn").onclick = () =>
-        setCategory("coaches");
-
-      // ===== DATA LOADING =====
-      async function loadEntries() {
-        if (!currentUserId) return;
-
-        const { data, error } = await client
-          .from(currentCategory)
-          .select("*")
-          .eq("user_id", currentUserId)
-          .limit(50);
-
-        const list = document.getElementById("listContainer");
-        list.innerHTML = "";
-
-        if (error) {
-          list.textContent = "Error loading.";
+      async function saveEdit() {
+        if (!editingRow || !editingCard) {
+          showAlert("Nothing to update", "error");
           return;
         }
 
-        // ✅ TEAM SUMMARY (always shown)
-        const teamInfo = document.createElement("div");
-        teamInfo.className = "ok-text";
+        const rowId = editingRow.id;
+        const userId = currentUserId;
+
+        let data = null;
+        if (currentCategory === "competitors")
+          data = getCompetitorData(editingCard);
+        else if (currentCategory === "judges") data = getJudgeData(editingCard);
+        else data = getCoachData(editingCard);
+
+        if (!data) return;
+
+        const saveBtn = container.querySelector(".btn.btn-success");
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.innerHTML = '<span class="loading"></span> Saving...';
+        }
+
+        try {
+          const { data: updatedRows, error } = await client
+            .from(currentCategory)
+            .update(data)
+            .eq("id", rowId)
+            .eq("user_id", userId)
+            .select();
+
+          if (error) {
+            console.error("Update error:", error);
+            showAlert("Update failed: " + error.message, "error");
+            return;
+          }
+
+          if (!updatedRows || updatedRows.length === 0) {
+            showAlert(
+              "Update failed: No matching entry found. It may have been deleted or doesn't belong to you.",
+              "error",
+            );
+            return;
+          }
+
+          showAlert("Updated successfully!", "success");
+          exitEditMode();
+          loadEntries();
+        } finally {
+          if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+          }
+        }
+      }
+
+      function exitEditMode() {
+        isEditing = false;
+        editingRow = null;
+        editingCard = null;
+
+        document.getElementById("generateBtn").disabled = false;
+        document.getElementById("setTeamBtn").disabled = false;
+        document.getElementById("countInput").disabled = false;
+
+        clearGenerated();
+        document.getElementById("countInput").value = "";
+        loadEntries();
+      }
+
+      // Data loading
+      async function loadEntries() {
+        if (!currentUserId) return;
+
+        const listContainer = document.getElementById("listContainer");
+        listContainer.innerHTML =
+          '<div class="status-bar status-info"><span class="loading"></span> Loading entries...</div>';
+
+        try {
+          const { data, error } = await client
+            .from(currentCategory)
+            .select("*")
+            .eq("user_id", currentUserId)
+            .limit(50);
+
+          if (error) {
+            listContainer.innerHTML =
+              '<div class="status-bar" style="background:#f8d7da;color:#721c24;">Error loading entries: ' +
+              error.message +
+              "</div>";
+            return;
+          }
+
+          renderEntries(data);
+        } catch (err) {
+          console.error("Load entries error:", err);
+          listContainer.innerHTML =
+            '<div class="status-bar" style="background:#f8d7da;color:#721c24;">Unexpected error loading entries</div>';
+        }
+      }
+
+      function renderEntries(data) {
+        const list = document.getElementById("listContainer");
+        list.innerHTML = "";
+
+        if (teamNameGlobal) {
+          teamDisplay.classList.remove("hidden");
+          teamNameDisplay.textContent = teamNameGlobal;
+        } else {
+          teamDisplay.classList.add("hidden");
+        }
+
+        if (!data || data.length === 0) {
+          list.innerHTML =
+            '<div class="status-bar" style="background:#e2e3e5;color:#383d41;">No entries yet. Add your first entry below.</div>';
+          return;
+        }
+
+        data.forEach((row) => {
+          const entryCard = document.createElement("div");
+          entryCard.className = "entry-card";
+
+          let detailsHtml = "";
+          if (currentCategory === "competitors") {
+            detailsHtml = `
+            <div class="detail-item">
+              <span class="detail-label">Gender</span>
+              <span class="detail-value">${row.gender}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Birth Date</span>
+              <span class="detail-value">${row.birthdate}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Belt</span>
+              <span class="detail-value">${row.belt}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Weight</span>
+              <span class="detail-value">${row.weight} kg</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Team</span>
+              <span class="detail-value">${row.team}</span>
+            </div>
+          `;
+          } else {
+            detailsHtml = `
+            <div class="detail-item">
+              <span class="detail-label">Belt</span>
+              <span class="detail-value">${row.belt}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Team</span>
+              <span class="detail-value">${row.team}</span>
+            </div>
+          `;
+          }
+
+          entryCard.innerHTML = `
+          <div class="entry-header">
+            <div class="entry-name">${row.name}</div>
+            <span class="category-indicator">${currentCategory.slice(0, -1)}</span>
+          </div>
+          <div class="entry-details">
+            ${detailsHtml}
+          </div>
+          <div class="entry-actions">
+            <button class="action-btn edit-btn" data-id="${row.id}">
+              <i class="fas fa-edit"></i> Edit
+            </button>
+            <button class="action-btn delete-btn" data-id="${row.id}">
+              <i class="fas fa-trash"></i> Delete
+            </button>
+          </div>
+        `;
+
+          const editBtn = entryCard.querySelector(".edit-btn");
+          const deleteBtn = entryCard.querySelector(".delete-btn");
+
+          editBtn.addEventListener("click", () => startEdit(row));
+          deleteBtn.addEventListener("click", async () => {
+            if (confirm("Are you sure you want to delete this entry?")) {
+              try {
+                await client
+                  .from(currentCategory)
+                  .delete()
+                  .eq("id", row.id)
+                  .eq("user_id", currentUserId);
+                loadEntries();
+              } catch (err) {
+                console.error("Delete error:", err);
+                showAlert("Failed to delete entry: " + err.message, "error");
+              }
+            }
+          });
+
+          list.appendChild(entryCard);
+        });
+
+        const summary = document.createElement("div");
+        summary.className = "status-bar status-info";
         const label =
           currentCategory === "competitors"
             ? "Competitors"
             : currentCategory === "judges"
               ? "Judges"
               : "Coaches";
-
-        teamInfo.textContent = `Team: ${
-          teamNameGlobal || "Not set"
-        } | ${label}: ${data ? data.length : 0}`;
-
-        list.appendChild(teamInfo);
-
-        if (!data || data.length === 0) {
-          const empty = document.createElement("div");
-          empty.textContent = "No entries yet.";
-          list.appendChild(empty);
-          return;
-        }
-
-        // ✅ ENTRY LIST
-        data.forEach((row) => {
-          const div = document.createElement("div");
-          div.className = "entry";
-          div.innerHTML = safeSummary(currentCategory, row);
-
-          const delBtn = document.createElement("button");
-          delBtn.textContent = "Delete";
-          delBtn.onclick = async () => {
-            await client
-              .from(currentCategory)
-              .delete()
-              .eq("id", row.id)
-              .eq("user_id", currentUserId);
-            loadEntries();
-          };
-
-          div.appendChild(delBtn);
-          list.appendChild(div);
-        });
+        summary.innerHTML = `Total ${label}: <strong>${data.length}</strong>`;
+        list.insertBefore(summary, list.firstChild);
       }
 
-      function safeSummary(cat, row) {
-        if (cat === "competitors") {
-          return `
-          <strong>${row.name}</strong> (${row.gender}, ${row.birthdate})<br>
-          Belt: ${row.belt}, Weight: ${row.weight} kg<br>
-          Team: ${row.team}<br>
-          <small>ID: ${row.id}</small>
-        `;
-        } else if (cat === "judges" || cat === "coaches") {
-          return `
-          <strong>${row.name}</strong><br>
-          Belt: ${row.belt}<br>
-          Team: ${row.team}<br>
-          <small>ID: ${row.id}</small>
-        `;
-        }
-        return JSON.stringify(row);
-      }
-
-      // ===== TEAM SETTING =====
-      document.getElementById("setTeamBtn").onclick = () => {
+      // --- TEAM SETTING LOGIC WITH BULK UPDATE ---
+      document.getElementById("setTeamBtn").onclick = async () => {
         const input = document.getElementById("teamNameInput");
+        const newTeamName = input.value.trim().toUpperCase();
 
-        // 🔥 force uppercase
-        teamNameGlobal = input.value.trim().toUpperCase();
-        input.value = teamNameGlobal; // reflect it back in the input
-
-        if (!teamNameGlobal) {
-          alert("Please enter a team name.");
+        if (!newTeamName) {
+          showAlert("Please enter a team name.", "error");
           return;
         }
 
-        alert("Team set: " + teamNameGlobal);
+        const btn = document.getElementById("setTeamBtn");
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loading"></span> Saving...';
 
-        document.getElementById("addEntriesSection").classList.remove("hidden");
+        try {
+          // 1. Update all entries for this user across all tables
+          const updatePromises = [
+            client
+              .from("competitors")
+              .update({ team: newTeamName })
+              .eq("user_id", currentUserId),
+            client
+              .from("judges")
+              .update({ team: newTeamName })
+              .eq("user_id", currentUserId),
+            client
+              .from("coaches")
+              .update({ team: newTeamName })
+              .eq("user_id", currentUserId),
+          ];
 
-        updateAddEntriesTitle();
-        loadEntries(); // optional but useful
+          await Promise.all(updatePromises);
+
+          // 2. Update local state and UI
+          teamNameGlobal = newTeamName;
+          applyTeam(newTeamName);
+          loadEntries();
+
+          showAlert("Team name updated successfully!", "success");
+        } catch (err) {
+          console.error("Team update error:", err);
+          showAlert("Failed to update team: " + err.message, "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+        }
       };
 
-      // ===== FORM GENERATION & VALIDATION =====
-      const container = document.getElementById("generatedContainer");
+      // Form generation & validation
       function clearGenerated() {
         container.innerHTML = "";
       }
 
       function beltSelect() {
         return `<select class="field-belt">
-        <option value="">Belt *</option>
+        <option value="">Select Belt *</option>
         <option>10 kup</option><option>9 kup</option><option>8 kup</option>
         <option>7 kup</option><option>6 kup</option><option>5 kup</option>
         <option>4 kup</option><option>3 kup</option><option>2 kup</option>
@@ -471,66 +1091,102 @@
 
       function makeCompetitorCard(idx) {
         const wrap = document.createElement("div");
-        wrap.className = "section competitor";
+        wrap.className = "card";
         wrap.innerHTML = `
-        <h4>Competitor #${idx}</h4>
-        <div class="row">
-          <input class="field-name" type="text" placeholder="Name *" />
-          <input class="field-birthdate" type="date" />
-          <select class="field-gender">
-            <option value="">Gender *</option>
-            <option>Male</option><option>Female</option>
-          </select>
+        <h3 class="card-title">Competitor #${idx}</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Name *</label>
+            <input class="field-name" type="text" placeholder="Full name" />
+          </div>
+          <div class="form-group">
+            <label>Birth Date *</label>
+            <input class="field-birthdate" type="date" />
+          </div>
+          <div class="form-group">
+            <label>Gender *</label>
+            <select class="field-gender">
+              <option value="">Select Gender</option>
+              <option>Male</option><option>Female</option>
+            </select>
+          </div>
         </div>
-        <div class="row">
-          ${beltSelect()}
-          <input class="field-team" type="text" placeholder="Team *" value="${teamNameGlobal}" />
-          <input class="field-weight" type="number" step="0.1" placeholder="Real weight (example 33 kg) *" />
+        <div class="form-row">
+          <div class="form-group">
+            <label>Belt *</label>
+            ${beltSelect()}
+          </div>
+          <div class="form-group">
+            <label>Team *</label>
+            <input class="field-team" type="text" placeholder="Team name" value="${teamNameGlobal}" disabled />
+          </div>
+          <div class="form-group">
+            <label>Weight (kg) *</label>
+            <input class="field-weight" type="number" step="0.1" placeholder="Real weight (example 33)" />
+          </div>
         </div>
-        <div class="error-text hidden"></div>
+        <div class="error-text"></div>
       `;
         return wrap;
       }
 
       function makeJudgeCard(idx) {
         const wrap = document.createElement("div");
-        wrap.className = "section judge";
+        wrap.className = "card";
         wrap.innerHTML = `
-        <h4>Judge #${idx}</h4>
-        <div class="row">
-          <input class="field-name" type="text" placeholder="Name *" />
-          ${beltSelect()}
-          <input class="field-team" type="text" placeholder="Team *" value="${teamNameGlobal}" />
+        <h3 class="card-title">Judge #${idx}</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Name *</label>
+            <input class="field-name" type="text" placeholder="Full name" />
+          </div>
+          <div class="form-group">
+            <label>Belt *</label>
+            ${beltSelect()}
+          </div>
+          <div class="form-group">
+            <label>Team *</label>
+            <input class="field-team" type="text" placeholder="Team name" value="${teamNameGlobal}" disabled />
+          </div>
         </div>
-        <div class="error-text hidden"></div>
+        <div class="error-text"></div>
       `;
         return wrap;
       }
 
       function makeCoachCard(idx) {
         const wrap = document.createElement("div");
-        wrap.className = "section coach";
+        wrap.className = "card";
         wrap.innerHTML = `
-        <h4>Coach #${idx}</h4>
-        <div class="row">
-          <input class="field-name" type="text" placeholder="Name *" />
-          ${beltSelect()}
-          <input class="field-team" type="text" placeholder="Team *" value="${teamNameGlobal}" />
+        <h3 class="card-title">Coach #${idx}</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Name *</label>
+            <input class="field-name" type="text" placeholder="Full name" />
+          </div>
+          <div class="form-group">
+            <label>Belt *</label>
+            ${beltSelect()}
+          </div>
+          <div class="form-group">
+            <label>Team *</label>
+            <input class="field-team" type="text" placeholder="Team name" value="${teamNameGlobal}" disabled />
+          </div>
         </div>
-        <div class="error-text hidden"></div>
+        <div class="error-text"></div>
       `;
         return wrap;
       }
 
       function markMissing(input) {
-        input.classList.add("error"); // add red border
+        input.classList.add("input-error");
       }
 
       function showError(wrap, msg) {
         const el = wrap.querySelector(".error-text");
         el.textContent = msg;
-        el.classList.remove("hidden");
-        setTimeout(() => el.classList.add("hidden"), 2500);
+        el.classList.add("show");
+        setTimeout(() => el.classList.remove("show"), 3000);
       }
 
       function getCompetitorData(wrap) {
@@ -542,17 +1198,18 @@
         const weight = wrap.querySelector(".field-weight").value;
 
         const required = [
-          [name, wrap.querySelector(".field-name"), "Name missing"],
+          [name, wrap.querySelector(".field-name"), "Name is required"],
           [
             birthdate,
             wrap.querySelector(".field-birthdate"),
-            "Birthdate missing",
+            "Birth date is required",
           ],
-          [gender, wrap.querySelector(".field-gender"), "Gender missing"],
-          [belt, wrap.querySelector(".field-belt"), "Belt missing"],
-          [team, wrap.querySelector(".field-team"), "Team missing"],
-          [weight, wrap.querySelector(".field-weight"), "Weight missing"],
+          [gender, wrap.querySelector(".field-gender"), "Gender is required"],
+          [belt, wrap.querySelector(".field-belt"), "Belt rank is required"],
+          [team, wrap.querySelector(".field-team"), "Team name is required"],
+          [weight, wrap.querySelector(".field-weight"), "Weight is required"],
         ];
+
         for (const [val, el, msg] of required) {
           if (!val) {
             markMissing(el);
@@ -560,6 +1217,7 @@
             return null;
           }
         }
+
         return { name, birthdate, gender, belt, team, weight: Number(weight) };
       }
 
@@ -567,10 +1225,12 @@
         const name = wrap.querySelector(".field-name").value.trim();
         const belt = wrap.querySelector(".field-belt").value.trim();
         const team = wrap.querySelector(".field-team").value.trim();
+
         if (!name || !belt || !team) {
-          showError(wrap, "Missing fields");
+          showError(wrap, "All fields are required");
           return null;
         }
+
         return { name, belt, team };
       }
 
@@ -578,27 +1238,34 @@
         const name = wrap.querySelector(".field-name").value.trim();
         const belt = wrap.querySelector(".field-belt").value.trim();
         const team = wrap.querySelector(".field-team").value.trim();
+
         if (!name || !belt || !team) {
-          showError(wrap, "Missing fields");
+          showError(wrap, "All fields are required");
           return null;
         }
+
         return { name, belt, team };
       }
 
-      // ===== ADD ALL BUTTON =====
       document.getElementById("generateBtn").addEventListener("click", () => {
         if (!currentUserId) {
-          alert("You must be logged in to add entries.");
+          showAlert("You must be logged in to add entries.", "error");
           return;
         }
+        if (isEditing) {
+          showAlert("Finish editing before adding new entries.", "warning");
+          return;
+        }
+
         const count = parseInt(
           document.getElementById("countInput").value || "0",
           10,
         );
         if (isNaN(count) || count < 1) {
-          alert("Please enter a valid number ≥ 1");
+          showAlert("Please enter a valid number ≥ 1", "error");
           return;
         }
+
         clearGenerated();
         for (let i = 0; i < count; i++) {
           if (currentCategory === "competitors")
@@ -607,34 +1274,38 @@
             container.appendChild(makeJudgeCard(i + 1));
           else container.appendChild(makeCoachCard(i + 1));
         }
+
         const addAll = document.createElement("button");
-        addAll.textContent = `Add all ${currentCategory}`;
-        addAll.type = "button";
-        addAll.id = "addAllBtn";
-        addAll.style.marginTop = "12px";
+        addAll.className = "btn btn-success";
+        addAll.innerHTML = `<i class="fas fa-plus"></i> Add All ${currentCategory}`;
+        addAll.style.marginTop = "20px";
         addAll.addEventListener("click", onAddAll);
         container.appendChild(addAll);
       });
 
       async function onAddAll() {
         if (!currentUserId) {
-          alert("You must be logged in to add entries.");
+          showAlert("You must be logged in to add entries.", "error");
+          return;
+        }
+        if (isEditing) {
+          showAlert("Finish editing before adding new entries.", "warning");
           return;
         }
 
-        // Map currentCategory to actual card class names
         let cardClass =
           currentCategory === "competitors"
             ? "competitor"
             : currentCategory === "judges"
               ? "judge"
               : "coach";
+        const cards = Array.from(container.querySelectorAll(".card"));
 
-        const cards = Array.from(
-          container.querySelectorAll(".section." + cardClass),
-        );
         if (cards.length === 0) {
-          alert("No cards generated. Please click 'Generate fields' first.");
+          showAlert(
+            "No cards generated. Please click 'Generate fields' first.",
+            "error",
+          );
           return;
         }
 
@@ -643,31 +1314,28 @@
         let hasError = false;
 
         for (const c of cards) {
-          const inputs = Array.from(c.querySelectorAll("input, select"));
+          if (c.querySelector(".btn")) continue;
 
-          // Check if all non-team fields are empty
+          const inputs = Array.from(c.querySelectorAll("input, select"));
           const nonTeamFields = inputs.filter(
             (el) => !el.classList.contains("field-team"),
           );
           const allNonTeamEmpty = nonTeamFields.every((el) => !el.value.trim());
 
           if (allNonTeamEmpty) {
-            skipped++; // completely empty card except team → skip it
+            skipped++;
             continue;
           }
 
-          // Partially filled card → validate required fields
           let data = null;
           if (currentCategory === "competitors") data = getCompetitorData(c);
           else if (currentCategory === "judges") data = getJudgeData(c);
           else data = getCoachData(c);
 
           if (!data) {
-            // Highlight missing fields in red
             nonTeamFields.forEach((el) => {
               if (!el.value.trim()) markMissing(el);
             });
-
             showError(c, "Fill all required fields or leave entry empty");
             hasError = true;
             continue;
@@ -677,30 +1345,73 @@
         }
 
         if (hasError) {
-          alert(
+          showAlert(
             "Some entries are incomplete. Fill all required fields or leave entries empty.",
+            "error",
           );
-          return; // stop adding
-        }
-
-        if (rows.length === 0) {
-          alert("No valid entries to add.");
           return;
         }
 
-        // Insert valid entries into Supabase
-        const { error } = await client.from(currentCategory).insert(rows);
-
-        if (error) {
-          console.error(error);
-          alert(`Failed to add ${currentCategory}: ${error.message}`);
-        } else {
-          let msg = `Added ${rows.length} ${currentCategory}.`;
-          if (skipped > 0) msg += ` Skipped ${skipped} empty entries.`;
-          alert(msg);
-          clearGenerated();
-          loadEntries();
+        if (rows.length === 0) {
+          showAlert("No valid entries to add.", "warning");
+          return;
         }
+
+        const addAllBtn = container.querySelector(".btn.btn-success");
+        if (addAllBtn) {
+          addAllBtn.disabled = true;
+          addAllBtn.innerHTML =
+            '<span class="loading"></span> Adding entries...';
+        }
+
+        try {
+          const { error } = await client.from(currentCategory).insert(rows);
+          if (error) {
+            console.error(error);
+            showAlert(
+              `Failed to add ${currentCategory}: ${error.message}`,
+              "error",
+            );
+          } else {
+            let msg = `Added ${rows.length} ${currentCategory}.`;
+            if (skipped > 0) msg += ` Skipped ${skipped} empty entries.`;
+            showAlert(msg, "success");
+            clearGenerated();
+            loadEntries();
+          }
+        } finally {
+          if (addAllBtn) {
+            addAllBtn.disabled = false;
+            addAllBtn.innerHTML = `<i class="fas fa-plus"></i> Add All ${currentCategory}`;
+          }
+        }
+      }
+
+      function showAlert(message, type) {
+        const existingAlert = document.querySelector(".status-bar.alert");
+        if (existingAlert) existingAlert.remove();
+
+        const alertDiv = document.createElement("div");
+        alertDiv.className = `status-bar alert ${type === "success" ? "status-success" : type === "error" ? "status-error" : "status-warning"}`;
+        alertDiv.textContent = message;
+
+        if (authSection.classList.contains("hidden")) {
+          competitionSection.insertBefore(
+            alertDiv,
+            competitionSection.firstChild,
+          );
+        } else {
+          authSection.parentNode.insertBefore(
+            alertDiv,
+            authSection.nextSibling,
+          );
+        }
+
+        setTimeout(() => {
+          if (alertDiv.parentNode) {
+            alertDiv.remove();
+          }
+        }, 5000);
       }
     </script>
   </body>
