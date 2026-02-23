@@ -660,7 +660,7 @@
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6aXdueWNvc2R4ZXVhY3NsY3phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY3MTkxMDAsImV4cCI6MjA4MjI5NTEwMH0.7OvfatHP7RAp6JS1F5hMlwfdSDgpN7EXsY2SVMoFSoY";
       const client = window.supabase.createClient(
         SUPABASE_URL.trim(),
-        SUPABASE_ANON_KEY.trim(),
+        SUPABASE_ANON_KEY.trim()
       );
 
       // DOM elements
@@ -673,7 +673,7 @@
       const dashboardContainer = document.getElementById("dashboardContainer");
       const addEntriesTitle = document.getElementById("addEntriesTitle");
       const activeCategoryBadge = document.getElementById(
-        "activeCategoryBadge",
+        "activeCategoryBadge"
       );
 
       // State variables
@@ -790,7 +790,7 @@
           } else {
             showAlert(
               "Authentication succeeded but user data not available.",
-              "error",
+              "error"
             );
           }
         });
@@ -809,7 +809,7 @@
             {
               redirectTo:
                 "https://merky-w.github.io/Competition/azta-index.html",
-            },
+            }
           );
 
           if (error) {
@@ -817,7 +817,7 @@
           } else {
             showAlert(
               "Password reset email sent. Check your inbox.",
-              "success",
+              "success"
             );
           }
         });
@@ -828,7 +828,7 @@
           if (!isRecoveryFlow) {
             showAlert(
               "This page was not opened from a password reset email.",
-              "error",
+              "error"
             );
             return;
           }
@@ -847,7 +847,7 @@
           } else {
             showAlert(
               "Password updated successfully. You can now log in.",
-              "success",
+              "success"
             );
             location.href =
               "https://merky-w.github.io/Competition/azta-index.html";
@@ -873,7 +873,7 @@
           renderDashboard(
             compRes.data || [],
             judgeRes.data || [],
-            coachRes.data || [],
+            coachRes.data || []
           );
         } catch (err) {
           console.error("Dashboard error:", err);
@@ -943,10 +943,10 @@
           if (count > 0) {
             section.data.forEach((row) => {
               const editBtn = sectionEl.querySelector(
-                `.edit-btn[data-id="${row.id}"]`,
+                `.edit-btn[data-id="${row.id}"]`
               );
               const deleteBtn = sectionEl.querySelector(
-                `.delete-btn[data-id="${row.id}"]`,
+                `.delete-btn[data-id="${row.id}"]`
               );
 
               if (editBtn)
@@ -1125,13 +1125,13 @@
           // Set Sparring/Patterns
           if (row.sparring) {
             const sparringEl = card.querySelector(
-              `.field-sparring[value="${row.sparring}"]`,
+              `.field-sparring[value="${row.sparring}"]`
             );
             if (sparringEl) sparringEl.checked = true;
           }
           if (row.patterns) {
             const patternsEl = card.querySelector(
-              `.field-patterns[value="${row.patterns}"]`,
+              `.field-patterns[value="${row.patterns}"]`
             );
             if (patternsEl) patternsEl.checked = true;
           }
@@ -1440,7 +1440,7 @@
 
         const count = parseInt(
           document.getElementById("countInput").value || "0",
-          10,
+          10
         );
         if (isNaN(count) || count < 1)
           return showAlert("Enter a number ≥ 1", "error");
@@ -1457,7 +1457,7 @@
         setTimeout(
           () =>
             container.scrollIntoView({ behavior: "smooth", block: "start" }),
-          100,
+          100
         );
 
         const addAll = document.createElement("button");
@@ -1484,7 +1484,7 @@
           if (c.querySelector(".btn")) continue;
           const inputs = Array.from(c.querySelectorAll("input, select"));
           const nonTeamFields = inputs.filter(
-            (el) => !el.classList.contains("field-team"),
+            (el) => !el.classList.contains("field-team")
           );
           const allNonTeamEmpty = nonTeamFields.every((el) => !el.value.trim());
 
@@ -1530,7 +1530,7 @@
           loadDashboard();
 
           const sectionEl = document.getElementById(
-            `section-${currentCategory}`,
+            `section-${currentCategory}`
           );
           if (sectionEl) {
             setTimeout(
@@ -1539,7 +1539,7 @@
                   behavior: "smooth",
                   block: "start",
                 }),
-              100,
+              100
             );
           }
         } catch (err) {
@@ -1557,13 +1557,22 @@
         if (existingAlert) existingAlert.remove();
 
         const alertDiv = document.createElement("div");
-        alertDiv.className = `status-bar alert ${type === "success" ? "status-success" : type === "error" ? "status-error" : "status-warning"}`;
+        
+        // ✅ FIXED: Safe version using if/else and concatenation
+        let statusClass = "status-warning";
+        if (type === "success") {
+          statusClass = "status-success";
+        } else if (type === "error") {
+          statusClass = "status-error";
+        }
+        alertDiv.className = "status-bar alert " + statusClass;
+
         alertDiv.textContent = message;
 
         if (authSection.classList.contains("hidden")) {
           competitionSection.insertBefore(
             alertDiv,
-            competitionSection.firstChild,
+            competitionSection.firstChild
           );
           setTimeout(
             () =>
@@ -1571,12 +1580,12 @@
                 behavior: "smooth",
                 block: "start",
               }),
-            10,
+            10
           );
         } else {
           authSection.parentNode.insertBefore(
             alertDiv,
-            authSection.nextSibling,
+            authSection.nextSibling
           );
         }
         setTimeout(() => {
