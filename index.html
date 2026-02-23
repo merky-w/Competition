@@ -253,6 +253,28 @@
         color: #856404;
       }
 
+      /* --- RADIO GROUP STYLES --- */
+      .radio-group {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        height: 48px; /* Match input height */
+      }
+
+      .radio-group label {
+        margin-bottom: 0;
+        font-weight: normal;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        cursor: pointer;
+      }
+
+      .radio-group input[type="radio"] {
+        width: auto;
+        margin: 0;
+      }
+
       /* --- DASHBOARD / ACCORDION STYLES --- */
       .dashboard-section {
         margin-bottom: 1rem;
@@ -357,6 +379,34 @@
       .detail-value {
         font-weight: 600;
         word-break: break-word;
+      }
+
+      .badge-yes {
+        display: inline-block;
+        padding: 0.2em 0.6em;
+        font-size: 75%;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 0.25rem;
+        background-color: var(--success);
+        color: white;
+      }
+      
+      .badge-no {
+        display: inline-block;
+        padding: 0.2em 0.6em;
+        font-size: 75%;
+        font-weight: 700;
+        line-height: 1;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: 0.25rem;
+        background-color: var(--gray);
+        color: white;
       }
 
       .entry-actions {
@@ -916,7 +966,7 @@
                       .then(() => loadDashboard());
                   }
                 });
-            });
+            }
           }
         });
       }
@@ -951,11 +1001,21 @@
       function createEntryCardHtml(row, category) {
         let detailsHtml = "";
         if (category === "competitors") {
+          // Helper for badges
+          const sparringBadge = row.sparring === 'Yes' 
+            ? '<span class="badge-yes">Sparring</span>' 
+            : '<span class="badge-no">No Sparring</span>';
+          
+          const patternsBadge = row.patterns === 'Yes' 
+            ? '<span class="badge-yes">Patterns</span>' 
+            : '<span class="badge-no">No Patterns</span>';
+
           detailsHtml = `
             <div class="detail-item"><span class="detail-label">Gender</span><span class="detail-value">${row.gender}</span></div>
             <div class="detail-item"><span class="detail-label">Birth Date</span><span class="detail-value">${row.birthdate}</span></div>
             <div class="detail-item"><span class="detail-label">Belt</span><span class="detail-value">${row.belt}</span></div>
             <div class="detail-item"><span class="detail-label">Weight</span><span class="detail-value">${row.weight} kg</span></div>
+            <div class="detail-item"><span class="detail-label">Disciplines</span><span class="detail-value" style="display:flex; gap:5px; flex-wrap:wrap;">${sparringBadge} ${patternsBadge}</span></div>
             <div class="detail-item"><span class="detail-label">Team</span><span class="detail-value">${row.team}</span></div>
           `;
         } else {
@@ -1059,6 +1119,17 @@
           card.querySelector(".field-belt").value = row.belt;
           card.querySelector(".field-team").value = row.team;
           card.querySelector(".field-weight").value = row.weight;
+          
+          // Set Sparring/Patterns
+          if(row.sparring) {
+             const sparringEl = card.querySelector(`.field-sparring[value="${row.sparring}"]`);
+             if(sparringEl) sparringEl.checked = true;
+          }
+          if(row.patterns) {
+             const patternsEl = card.querySelector(`.field-patterns[value="${row.patterns}"]`);
+             if(patternsEl) patternsEl.checked = true;
+          }
+
         } else {
           card = cat === "judges" ? makeJudgeCard(1) : makeCoachCard(1);
           card.querySelector(".field-name").value = row.name;
@@ -1229,6 +1300,24 @@
           <div class="form-group"><label>Team *</label><input class="field-team" type="text" value="${teamNameGlobal}" disabled /></div>
           <div class="form-group"><label>Weight (kg) *</label><input class="field-weight" type="number" step="0.1" placeholder="33.0" /></div>
         </div>
+        <!-- NEW: Sparring and Patterns Row -->
+        <div class="form-row">
+            <div class="form-group">
+                <label>Sparring</label>
+                <div class="radio-group">
+                    <label><input type="radio" class="field-sparring" name="sparring_${idx}" value="Yes" checked> Yes</label>
+                    <label><input type="radio" class="field-sparring" name="sparring_${idx}" value="No"> No</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Patterns</label>
+                <div class="radio-group">
+                    <label><input type="radio" class="field-patterns" name="patterns_${idx}" value="Yes" checked> Yes</label>
+                    <label><input type="radio" class="field-patterns" name="patterns_${idx}" value="No"> No</label>
+                </div>
+            </div>
+            <div class="form-group"></div> <!-- Spacer for alignment -->
+        </div>
         <div class="error-text"></div>`;
         return wrap;
       }
@@ -1279,6 +1368,10 @@
         const belt = wrap.querySelector(".field-belt").value.trim();
         const team = wrap.querySelector(".field-team").value.trim();
         const weight = wrap.querySelector(".field-weight").value;
+        
+        // NEW: Get Sparring and Patterns values
+        const sparring = wrap.querySelector(".field-sparring:checked").value;
+        const patterns = wrap.querySelector(".field-patterns:checked").value;
 
         const required = [
           [name, wrap.querySelector(".field-name"), "Name is required"],
@@ -1300,7 +1393,18 @@
             return null;
           }
         }
-        return { name, birthdate, gender, belt, team, weight: Number(weight) };
+        
+        // Return object including new fields
+        return { 
+            name, 
+            birthdate, 
+            gender, 
+            belt, 
+            team, 
+            weight: Number(weight),
+            sparring,
+            patterns 
+        };
       }
 
       function getJudgeData(wrap) {
