@@ -394,7 +394,7 @@
         background-color: var(--success);
         color: white;
       }
-      
+
       .badge-no {
         display: inline-block;
         padding: 0.2em 0.6em;
@@ -966,9 +966,9 @@
                       .then(() => loadDashboard());
                   }
                 });
-            }
+            });
           }
-        });
+        }); // <--- FIXED: CLOSING PARENTHESIS AND SEMICOLON FOR OUTER LOOP
       }
 
       function toggleSection(sectionId) {
@@ -1002,13 +1002,15 @@
         let detailsHtml = "";
         if (category === "competitors") {
           // Helper for badges
-          const sparringBadge = row.sparring === 'Yes' 
-            ? '<span class="badge-yes">Sparring</span>' 
-            : '<span class="badge-no">No Sparring</span>';
-          
-          const patternsBadge = row.patterns === 'Yes' 
-            ? '<span class="badge-yes">Patterns</span>' 
-            : '<span class="badge-no">No Patterns</span>';
+          const sparringBadge =
+            row.sparring === "Yes"
+              ? '<span class="badge-yes">Sparring</span>'
+              : '<span class="badge-no">No Sparring</span>';
+
+          const patternsBadge =
+            row.patterns === "Yes"
+              ? '<span class="badge-yes">Patterns</span>'
+              : '<span class="badge-no">No Patterns</span>';
 
           detailsHtml = `
             <div class="detail-item"><span class="detail-label">Gender</span><span class="detail-value">${row.gender}</span></div>
@@ -1119,17 +1121,20 @@
           card.querySelector(".field-belt").value = row.belt;
           card.querySelector(".field-team").value = row.team;
           card.querySelector(".field-weight").value = row.weight;
-          
-          // Set Sparring/Patterns
-          if(row.sparring) {
-             const sparringEl = card.querySelector(`.field-sparring[value="${row.sparring}"]`);
-             if(sparringEl) sparringEl.checked = true;
-          }
-          if(row.patterns) {
-             const patternsEl = card.querySelector(`.field-patterns[value="${row.patterns}"]`);
-             if(patternsEl) patternsEl.checked = true;
-          }
 
+          // Set Sparring/Patterns
+          if (row.sparring) {
+            const sparringEl = card.querySelector(
+              `.field-sparring[value="${row.sparring}"]`,
+            );
+            if (sparringEl) sparringEl.checked = true;
+          }
+          if (row.patterns) {
+            const patternsEl = card.querySelector(
+              `.field-patterns[value="${row.patterns}"]`,
+            );
+            if (patternsEl) patternsEl.checked = true;
+          }
         } else {
           card = cat === "judges" ? makeJudgeCard(1) : makeCoachCard(1);
           card.querySelector(".field-name").value = row.name;
@@ -1368,7 +1373,7 @@
         const belt = wrap.querySelector(".field-belt").value.trim();
         const team = wrap.querySelector(".field-team").value.trim();
         const weight = wrap.querySelector(".field-weight").value;
-        
+
         // NEW: Get Sparring and Patterns values
         const sparring = wrap.querySelector(".field-sparring:checked").value;
         const patterns = wrap.querySelector(".field-patterns:checked").value;
@@ -1393,17 +1398,17 @@
             return null;
           }
         }
-        
+
         // Return object including new fields
-        return { 
-            name, 
-            birthdate, 
-            gender, 
-            belt, 
-            team, 
-            weight: Number(weight),
-            sparring,
-            patterns 
+        return {
+          name,
+          birthdate,
+          gender,
+          belt,
+          team,
+          weight: Number(weight),
+          sparring,
+          patterns,
         };
       }
 
